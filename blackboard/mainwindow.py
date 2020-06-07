@@ -1,6 +1,9 @@
+from image_prc import image_prc
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter.colorchooser import askcolor
 from PIL import ImageTk, Image
 
 class MainWindow(tk.Tk):
@@ -9,6 +12,7 @@ class MainWindow(tk.Tk):
         super().__init__()
         self.__init_frames()
         self.bind_all('<Key>', self.exit_window)
+        self.title('Blackboard')
 
     def show_frame(self, name):
         self.frames[name].tkraise()
@@ -35,7 +39,7 @@ class MainWindow(tk.Tk):
         self.show_frame(DrawPage)
 
     def exit_window(self, event):
-        print(event)
+        #print(event)
         if event.keysym == 'Escape':
             self.destroy()
     
@@ -97,6 +101,16 @@ class DrawPage(tk.Frame):
                                     bg='blue')
         buttonColourBlue.pack(side='top', fill='both')
 
+        buttonErase = tk.Button(self.frameBut, text='Eraser',
+                                command=lambda : {self.dc.set_colour(None)},
+                                bg='grey')
+        buttonErase.pack(side='top', fill='both')
+
+        buttonSelClr = tk.Button(self.frameBut, text='Select colour',
+                                command=lambda : {self.select_clr()},
+                                bg='grey')
+        buttonSelClr.pack(side='top', fill='both')
+
         buttonClear = tk.Button(self.frameBut, text='Clear',
                                command=lambda : {self.dc.clear()},
                                bg='grey')
@@ -113,6 +127,12 @@ class DrawPage(tk.Frame):
         buttonSave.pack(side='top', fill='both')
         
 
+    def select_clr(self):
+        clr = askcolor(color=self.dc.line_colour)[1]
+        print('selected colour:', clr)
+        if not(clr == None):
+            self.dc.set_colour(colour=clr)
+        
     def save_figure(self):
         self.dc.postscript(file='temp.eps')
         img = Image.open('temp.eps')
@@ -121,6 +141,9 @@ class DrawPage(tk.Frame):
                                                        ('pdf files', '*.pdf'),
                                                        ('all files', '*')))
         img.save(name)
+        image_prc.change_clr(img_name=name, rgb=[255, 255, 255],
+                             new_rgb=[0, 0, 0], alpha=255)
+        #image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
         
                                
     def update_drawcanvas(self):
@@ -149,13 +172,15 @@ class DrawCanvas(tk.Canvas):
         super().__init__(parent, bg='black', highlightthickness=0)
         self.x = None
         self.y = None
-        self.line_colour = 'white'
-        self.line_width = 5
+        self.line_colour = 'lightgrey'
+        self.line_width = 2
         self.line_ids = []
 
         self.bind('<B1-Motion>', self.draw_line)
+        self.bind('<Button-1>', self.draw_line)
         self.bind('<ButtonRelease-1>', self.mouse_released)
-        self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr='green')})
+        self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr='red')})
+        self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr='red')})
         self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_colour)})
         self.bind('<ButtonRelease-3>', self.mouse_released)
         self.bind_all('<Control-slash>', self.undo_line_callback)
@@ -166,24 +191,36 @@ class DrawCanvas(tk.Canvas):
         self.addtag_all('all')
 
     def draw_line(self, event, clr=''):
-        print(event)
+        l_width = self.line_width
         if clr == '':
            clr = self.line_colour
+        if clr == None:
+            l_width = self.line_width*20
         if self.x == None:
-            self.x=event.x
+            self.x=event.x-(self.line_width/2)-2
             self.line_ids.append([])
         if self.y == None:
-            self.y=event.y
+            self.y=event.y-(self.line_width/2)-2
         x1, y1 = self.x, self.y
-        x2, y2 = event.x, event.y
+        x2, y2 = event.x-2, event.y-2
         self.x, self.y = event.x, event.y
-        self.line_ids[-1].append(self.create_line(x1,y1,
-                                                  x2, y2,
-                                                  fill=clr,
-                                                  smooth=True,
-                                                  width=self.line_width))
+        if clr == None:
+            self.line_ids[-1].append(self.create_line(x1,y1,
+                                                      x2, y2,
+                                                      fill=clr,
+                                                      smooth=True,
+                                                      width=l_width,
+                                                      capstyle=tk.ROUND,
+                                                      splinesteps=36))
+        else:
+            self.line_ids[-1].append(self.create_line(x1,y1,
+                                                      x2, y2,
+                                                      fill=clr,
+                                                      smooth=True,
+                                                      width=l_width,
+                                                      capstyle=tk.ROUND,
+                                                      splinesteps=36))
         
-
     def undo_line(self):
         if len(self.line_ids):
             for id in self.line_ids[-1]:
@@ -192,11 +229,21 @@ class DrawCanvas(tk.Canvas):
             del self.line_ids[-1]
         
     def undo_line_callback(self, event):
-        print(event)
+        #print(event)
         if (event.char == event.keysym or len(event.char)==1) and ('slash' in event.keysym or 'z' in event.keysym):
             self.undo_line()
         else:
+            print('u.l.c:', event)
             self.undo_line()
+
+    def key_e_callback(self, event):
+        """
+        Key event handler
+        """
+        print('k.e.h.:', event)
+        if (event.char == event.keysym or len(event.char)==1):
+            if ('slash' in event.keysym or 'z' in event.keysym):
+                self.undo_line()
 
     def set_colour(self, colour):
         self.prev_line_colour = self.line_colour
@@ -219,7 +266,7 @@ class DrawCanvas(tk.Canvas):
         # resize the canvas 
         self.config(width=self.width, height=self.height)
         # rescale all the objects tagged with the "all" tag
-        self.scale("all",0,0,wscale,hscale)
+        #self.scale("all",0,0,wscale,hscale)
 
     def clear(self):
         self.delete('all')

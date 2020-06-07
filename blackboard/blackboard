@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+from mainwindow import MainWindow
+
+app=MainWindow()
+app.mainloop()
