@@ -1,5 +1,6 @@
 from image_prc import image_prc
 
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -8,11 +9,12 @@ from PIL import ImageTk, Image
 
 class MainWindow(tk.Tk):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.__init_frames()
         self.bind_all('<Key>', self.exit_window)
         self.title('Blackboard')
+        self.geometry('800x800')
 
     def show_frame(self, name):
         self.frames[name].tkraise()
@@ -30,7 +32,7 @@ class MainWindow(tk.Tk):
         #page.pack(fill=tk.BOTH, expand=True)
         
 
-        for F in (DrawPage, AnotherPage):
+        for F in (DrawPage, AdvSelPage):
             frame = F(container, self)
             self.frames[F] = frame
             #frame.grid(row=0, column=0, sticky='nsew')
@@ -44,6 +46,9 @@ class MainWindow(tk.Tk):
             self.destroy()
     
 class DrawPage(tk.Frame):
+    """
+    A page, dedicated to drawing on a DrawCanvas
+    """
     x: int
     y: int
     drawcanvas: tk.Canvas
@@ -64,10 +69,6 @@ class DrawPage(tk.Frame):
         
     def __init_drawcanvas(self):
         self.dc = DrawCanvas(self)
-        #self.drawcanvas = tk.Canvas(self)
-        #self.drawcanvas.create_line(5, 5, 10, 10)
-        #self.drawcanvas.grid(row=0, column=0, sticky='nsew')
-        #self.drawcanvas.addtag_all('all')
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
 
@@ -86,10 +87,10 @@ class DrawPage(tk.Frame):
                                     bg='lightgrey')
         buttonColourLightgrey.pack(side='top', fill='both')
 
-        buttonColourWhite = tk.Button(self.frameBut, text='White',
-                                    command=lambda : self.dc.set_colour('white'),
-                                    bg='white')
-        buttonColourWhite.pack(side='top', fill='both')
+        #buttonColourWhite = tk.Button(self.frameBut, text='White',
+        #                            command=lambda : self.dc.set_colour('white'),
+        #                            bg='white')
+        #buttonColourWhite.pack(side='top', fill='both')
 
         buttonColourGreen = tk.Button(self.frameBut, text='Green',
                                     command=lambda : self.dc.set_colour('green'),
@@ -134,8 +135,9 @@ class DrawPage(tk.Frame):
             self.dc.set_colour(colour=clr)
         
     def save_figure(self):
-        self.dc.postscript(file='temp.eps')
-        img = Image.open('temp.eps')
+        temp_file='temp.eps'
+        self.dc.postscript(file=temp_file)
+        img = Image.open(temp_file)
         name = tk.filedialog.asksaveasfilename(title='Select file',
                                             filetypes=(('png files', '*.png'),
                                                        ('pdf files', '*.pdf'),
@@ -144,6 +146,7 @@ class DrawPage(tk.Frame):
         image_prc.change_clr(img_name=name, rgb=[255, 255, 255],
                              new_rgb=[0, 0, 0], alpha=255)
         #image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
+        os.remove(temp_file)
         
                                
     def update_drawcanvas(self):
@@ -152,12 +155,18 @@ class DrawPage(tk.Frame):
         self.dc = newcanvas
 
     
-class AnotherPage(ttk.Frame):
+class AdvSelPage(ttk.Frame):
+    """
+    Advanced selection page to insert graph templates and such
+    """
 
     def __init__(self, parent, controller):
         super().__init__(parent)
 
 class DrawCanvas(tk.Canvas):
+    """
+    A custom Canvas to draw on
+    """
     x: int
     y: int
     drawcanvas: tk.Canvas
@@ -166,7 +175,9 @@ class DrawCanvas(tk.Canvas):
     line_width: int
     height: int
     width: int
-    line_ids: list
+    lines_list: list
+    cleared_lines: list
+    draw_style: str
 
     def __init__(self, parent):
         super().__init__(parent, bg='black', highlightthickness=0)
@@ -174,13 +185,18 @@ class DrawCanvas(tk.Canvas):
         self.y = None
         self.line_colour = 'lightgrey'
         self.line_width = 2
-        self.line_ids = []
+        self.lines_list = []
+        self.cleared_lines = []
+        self.draw_style = 'free'
 
-        self.bind('<B1-Motion>', self.draw_line)
-        self.bind('<Button-1>', self.draw_line)
+        self.bind('<B1-Motion>', self.draw)
+        self.bind('<Button-1>', self.draw)
+        #self.bind('<B1-Motion>', self.draw_line)
+        #self.bind('<Button-1>', self.draw_line)
         self.bind('<ButtonRelease-1>', self.mouse_released)
-        self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr='red')})
-        self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr='red')})
+        self.bind('<Button-2>', self.draw_text)
+        self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr=None)})
+        self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr=None)})
         self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_colour)})
         self.bind('<ButtonRelease-3>', self.mouse_released)
         self.bind_all('<Control-slash>', self.undo_line_callback)
@@ -190,43 +206,71 @@ class DrawCanvas(tk.Canvas):
         self.width = self.winfo_reqwidth()
         self.addtag_all('all')
 
+    def draw(self, event):
+        if self.draw_style == 'free':
+            self.draw_line(event)
+        elif self.draw_style == 'text':
+            self.draw_text(event)
+        
+    def draw_text(self, event):
+        print('d.t.:', event)
+        
     def draw_line(self, event, clr=''):
         l_width = self.line_width
         if clr == '':
            clr = self.line_colour
         if clr == None:
             l_width = self.line_width*20
+
         if self.x == None:
             self.x=event.x-(self.line_width/2)-2
-            self.line_ids.append([])
+            self.lines_list.append([])
         if self.y == None:
             self.y=event.y-(self.line_width/2)-2
+
         x1, y1 = self.x, self.y
         x2, y2 = event.x-2, event.y-2
         self.x, self.y = event.x, event.y
-        if clr == None:
-            self.line_ids[-1].append(self.create_line(x1,y1,
-                                                      x2, y2,
-                                                      fill=clr,
-                                                      smooth=True,
-                                                      width=l_width,
-                                                      capstyle=tk.ROUND,
-                                                      splinesteps=36))
-        else:
-            self.line_ids[-1].append(self.create_line(x1,y1,
-                                                      x2, y2,
-                                                      fill=clr,
-                                                      smooth=True,
-                                                      width=l_width,
-                                                      capstyle=tk.ROUND,
-                                                      splinesteps=36))
         
+        l = Line(id_=self.create_line(x1,y1,
+                                  x2, y2,
+                                  fill=clr,
+                                  smooth=True,
+                                  width=l_width,
+                                  capstyle=tk.ROUND,
+                                  splinesteps=36),
+                 x=[x1, x2], y=[y1, y2], clr=clr)
+        self.lines_list[-1].append(l)
+        
+    def draw_line_coords(self, x1, y1, x2, y2, clr=''):
+        l_width = self.line_width
+        if clr == '':
+           clr = self.line_colour
+        self.lines_list.append([])
+
+        l = Line(id_=self.create_line(x1,y1,
+                                  x2, y2,
+                                  fill=clr,
+                                  smooth=True,
+                                  width=l_width,
+                                  capstyle=tk.ROUND,
+                                  splinesteps=36),
+                 x=[x1, x2], y=[y1, y2], clr=clr)
+        self.lines_list[-1].append(l)
+    
     def undo_line(self):
-        if len(self.line_ids):
-            for id in self.line_ids[-1]:
-                self.delete(id)
+        if len(self.lines_list) >= 1:
+            for line in self.lines_list[-1]:
+                self.delete(line.id_)
         
-            del self.line_ids[-1]
+            del self.lines_list[-1]
+        else:
+            for line in self.cleared_lines:
+                self.draw_line_coords(x1=line.x[0], y1=line.y[0],
+                                      x2=line.x[1], y2=line.y[1],
+                                      clr=line.clr)
+                #self.draw_line_coords(x1=line[0], y1=line[1],
+                #                      x2=line[2], y2=line[3])
         
     def undo_line_callback(self, event):
         #print(event)
@@ -245,6 +289,9 @@ class DrawCanvas(tk.Canvas):
             if ('slash' in event.keysym or 'z' in event.keysym):
                 self.undo_line()
 
+    def set_draw_style(self, style: str):
+        self.draw_style = style
+                
     def set_colour(self, colour):
         self.prev_line_colour = self.line_colour
         self.line_colour = colour
@@ -269,8 +316,30 @@ class DrawCanvas(tk.Canvas):
         #self.scale("all",0,0,wscale,hscale)
 
     def clear(self):
+        self.cleared_lines = []
+        for lines in self.lines_list:
+            for line in lines:
+                self.cleared_lines.append(line)
         self.delete('all')
+        self.lines_list=[]
 
+class Line():
+    """
+    Storage class for canvas line attributes
+    """
+    id_: str
+    x: list
+    y: list
+    clr: str
+    style: str
+
+    def __init__(self, id_: str, x: list, y: list,
+                 clr: str=None, style=''):
+        self.id_ = id_
+        self.x = x
+        self.y = y
+        self.clr=clr
+        self.style=style
         
 if __name__ == '__main__':
     app = MainWindow()
