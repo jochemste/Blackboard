@@ -142,10 +142,12 @@ class DrawPage(tk.Frame):
                                             filetypes=(('png files', '*.png'),
                                                        ('pdf files', '*.pdf'),
                                                        ('all files', '*')))
-        img.save(name)
-        image_prc.change_clr(img_name=name, rgb=[255, 255, 255],
-                             new_rgb=[0, 0, 0], alpha=255)
-        #image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
+
+        if len(name) > 0:
+            img.save(name)
+            image_prc.change_clr(img_name=name, rgb=[255, 255, 255],
+                                 new_rgb=[0, 0, 0], alpha=255)
+            #image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
         os.remove(temp_file)
         
                                
@@ -233,17 +235,26 @@ class DrawCanvas(tk.Canvas):
         self.x, self.y = event.x, event.y
         
         l = Line(id_=self.create_line(x1,y1,
-                                  x2, y2,
-                                  fill=clr,
-                                  smooth=True,
-                                  width=l_width,
-                                  capstyle=tk.ROUND,
-                                  splinesteps=36),
-                 x=[x1, x2], y=[y1, y2], clr=clr)
+                                      x2, y2,
+                                      fill=clr,
+                                      smooth=True,
+                                      width=l_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36),
+                 x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
+                 style=self.draw_style)
         self.lines_list[-1].append(l)
         
-    def draw_line_coords(self, x1, y1, x2, y2, clr=''):
-        l_width = self.line_width
+    def draw_line_coords(self, x1, y1, x2, y2, clr='', width=None, style=None):
+        if width ==  None:
+            l_width = self.line_width
+        else:
+            l_width = width
+        if style == None:
+            l_style=self.draw_style
+        else:
+            l_style = style
+
         if clr == '':
            clr = self.line_colour
         self.lines_list.append([])
@@ -255,7 +266,8 @@ class DrawCanvas(tk.Canvas):
                                   width=l_width,
                                   capstyle=tk.ROUND,
                                   splinesteps=36),
-                 x=[x1, x2], y=[y1, y2], clr=clr)
+                 x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
+                 style=l_style)
         self.lines_list[-1].append(l)
     
     def undo_line(self):
@@ -268,7 +280,8 @@ class DrawCanvas(tk.Canvas):
             for line in self.cleared_lines:
                 self.draw_line_coords(x1=line.x[0], y1=line.y[0],
                                       x2=line.x[1], y2=line.y[1],
-                                      clr=line.clr)
+                                      clr=line.clr, width=line.width,
+                                      style=line.style)
                 #self.draw_line_coords(x1=line[0], y1=line[1],
                 #                      x2=line[2], y2=line[3])
         
@@ -332,14 +345,16 @@ class Line():
     y: list
     clr: str
     style: str
+    width: int
 
     def __init__(self, id_: str, x: list, y: list,
-                 clr: str=None, style=''):
+                 clr: str=None, style=None, width=None):
         self.id_ = id_
         self.x = x
         self.y = y
         self.clr=clr
         self.style=style
+        self.width=width
         
 if __name__ == '__main__':
     app = MainWindow()
