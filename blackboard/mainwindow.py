@@ -60,79 +60,167 @@ class DrawPage(tk.Frame):
         self.x = None
         self.y = None
         self.config(cursor='pencil')
-        self.frameBut = tk.Frame(self)
+
+        self.frameBut = tk.LabelFrame(self, text='Options', bg='grey')
         self.frameBut.config(cursor='hand1')
-        self.frameBut.pack(side='left')
+        self.frameBut.pack(side='left', fill='both')
+        self.clrLabFrame = tk.LabelFrame(self.frameBut, text='Colours', bg='grey')
+        self.clrLabFrame.pack(side='top', padx=5)
+        self.sizeLabFrame = tk.LabelFrame(self.frameBut, text='Size', bg='grey')
+        self.sizeLabFrame.pack(side='top', padx=5)
+        self.menuLabFrame = tk.LabelFrame(self.frameBut, text='Menu', bg='grey')
+        self.menuLabFrame.pack(side='top', padx=5)
+        
         self.__init_buttons(controller)
         self.__init_drawcanvas()
-        
         
     def __init_drawcanvas(self):
         self.dc = DrawCanvas(self)
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
 
-    def __init_buttons(self, controller):
-        buttonExit = tk.Button(self.frameBut, text='Exit',
-                                 command=lambda : controller.destroy(), bg='grey')
-        buttonExit.pack(side='top', fill='both')
+    def __init_clr_buttons(self, controller):
+        self.clr_buttons = []
+        frameCol1 = tk.Frame(self.clrLabFrame, bg='grey')
+        frameCol2 = tk.Frame(self.clrLabFrame, bg='grey')
+        frameCol1.grid(column=0, row=1, pady=10)
+        frameCol2.grid(column=1, row=1, pady=10)
         
-        buttonColourRed = tk.Button(self.frameBut, text='Red',
-                                    command=lambda : {self.dc.set_colour('red')},
-                                    bg='red')
-        buttonColourRed.pack(side='top', fill='both')
-
-        buttonColourLightgrey = tk.Button(self.frameBut, text='Lightgrey',
-                                    command=lambda : self.dc.set_colour('lightgrey'),
+        buttonColourLightgrey = tk.Button(frameCol1, text='lg',
+                                    command=lambda : self.change_clr(buttonColourLightgrey,
+                                                                     clr='lightgrey'),
                                     bg='lightgrey')
         buttonColourLightgrey.pack(side='top', fill='both')
+        buttonColourLightgrey['state'] = tk.DISABLED
+        self.clr_buttons.append(buttonColourLightgrey)
+        
+        buttonColourRed = tk.Button(frameCol2, text='r',
+                                    command=lambda : self.change_clr(buttonColourRed,
+                                                                     clr='red'),
+                                    bg='red')
+        buttonColourRed.pack(side='top', fill='both')
+        self.clr_buttons.append(buttonColourRed)
 
-        #buttonColourWhite = tk.Button(self.frameBut, text='White',
-        #                            command=lambda : self.dc.set_colour('white'),
-        #                            bg='white')
-        #buttonColourWhite.pack(side='top', fill='both')
-
-        buttonColourGreen = tk.Button(self.frameBut, text='Green',
-                                    command=lambda : self.dc.set_colour('green'),
+        buttonColourGreen = tk.Button(frameCol1, text='g',
+                                    command=lambda : self.change_clr(buttonColourGreen,
+                                                                     clr='green'),
                                     bg='green')
         buttonColourGreen.pack(side='top', fill='both')
+        self.clr_buttons.append(buttonColourGreen)
 
-        buttonColourBlue = tk.Button(self.frameBut, text='Blue',
-                                    command=lambda : self.dc.set_colour('blue'),
+        buttonColourBlue = tk.Button(frameCol2, text='b',
+                                    command=lambda : self.change_clr(buttonColourBlue,
+                                                                     clr='blue'),
                                     bg='blue')
         buttonColourBlue.pack(side='top', fill='both')
+        self.clr_buttons.append(buttonColourBlue)
 
-        buttonErase = tk.Button(self.frameBut, text='Eraser',
-                                command=lambda : {self.dc.set_colour(None)},
-                                bg='grey')
-        buttonErase.pack(side='top', fill='both')
+        buttonColourYellow = tk.Button(frameCol1, text='y',
+                                    command=lambda : self.change_clr(buttonColourYellow,
+                                                                     clr='yellow'),
+                                    bg='yellow')
+        buttonColourYellow.pack(side='top', fill='both')
+        self.clr_buttons.append(buttonColourYellow)
 
-        buttonSelClr = tk.Button(self.frameBut, text='Select colour',
+        buttonColourPurple = tk.Button(frameCol2, text='p',
+                                    command=lambda : self.change_clr(buttonColourPurple,
+                                                                     clr='purple'),
+                                    bg='purple')
+        buttonColourPurple.pack(side='top', fill='both')
+        self.clr_buttons.append(buttonColourPurple)
+
+        buttonErase = tk.Button(self.clrLabFrame, text='Eraser',
+                                command=lambda : self.change_clr(buttonErase,
+                                                                     clr=None),
+                                bg=None)
+        buttonErase.grid(column=0, row=3, padx=10, columnspan=2)
+        self.clr_buttons.append(buttonErase)
+
+        buttonSelClr = tk.Button(self.clrLabFrame, text='Select\ncolour',
                                 command=lambda : {self.select_clr()},
-                                bg='grey')
-        buttonSelClr.pack(side='top', fill='both')
+                                bg='white')
+        buttonSelClr.grid(column=0, row=2, padx=10, columnspan=2)
+        self.clr_buttons.append(buttonSelClr)
+        self.__init_clr_label(clr='lightgrey')
 
-        buttonClear = tk.Button(self.frameBut, text='Clear',
+    def __init_size_buttons(self, controller):
+        buttonPlus = tk.Button(self.sizeLabFrame, text='+',
+                                command=lambda : self.__change_size(incr=1),
+                                bg='grey')
+        buttonPlus.pack(side='top', fill='both', padx=10)
+
+        buttonMin = tk.Button(self.sizeLabFrame, text='-',
+                                command=lambda : self.__change_size(decr=1),
+                                bg='grey')
+        buttonMin.pack(side='top', fill='both', padx=10)
+
+        buttonMin = tk.Button(self.sizeLabFrame, text='reset',
+                                command=lambda : self.__change_size(size=2),
+                                bg='grey')
+        buttonMin.pack(side='top', fill='both', padx=10)
+        self.__init_size_label(size=2)
+        
+    def __init_menu_buttons(self, controller):
+        buttonExit = tk.Button(self.menuLabFrame, text='Exit',
+                                 command=lambda : controller.destroy(), bg='grey')
+        buttonExit.pack(side='top', fill='both', padx=10)
+
+        buttonClear = tk.Button(self.menuLabFrame, text='Clear',
                                command=lambda : {self.dc.clear()},
                                bg='grey')
-        buttonClear.pack(side='top', fill='both')
+        buttonClear.pack(side='top', fill='both', padx=10)
 
-        buttonClear = tk.Button(self.frameBut, text='Undo',
+        buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
                                command=lambda : {self.dc.undo_line()},
                                bg='grey')
-        buttonClear.pack(side='top', fill='both')
+        buttonUndo.pack(side='top', fill='both', padx=10)
 
-        buttonSave = tk.Button(self.frameBut, text='Save',
+        buttonSave = tk.Button(self.menuLabFrame, text='Save',
                                command=lambda : {self.save_figure()},
                                bg='grey')
-        buttonSave.pack(side='top', fill='both')
+        buttonSave.pack(side='top', fill='both', padx=10)
+        
+    def __init_buttons(self, controller):
+        self.__init_clr_buttons(controller)
+        self.__init_size_buttons(controller)
+        self.__init_menu_buttons(controller)
+
+    def __init_size_label(self, size):
+        self.size_label = tk.Label(self.sizeLabFrame, text=str(size)+'px',
+                                   bg='grey')
+        self.size_label.pack(side='top', fill='both', padx=10)
+
+    def __init_clr_label(self, clr):
+        self.clr_label = tk.Label(self.clrLabFrame, bg=str(clr))
+        self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
+        self.clr_label.config(width=4)
+
+    def __change_size(self, size=None, incr=None, decr=None):
+        self.dc.set_line_width(size=size, incr=incr, decr=decr)
+        self.size_label.destroy()
+        self.size_label = tk.Label(self.sizeLabFrame, text=str(self.dc.line_width)+'px',
+                                   bg='grey')
+        self.size_label.pack(side='bottom', fill='both', padx=10)
         
 
+    def change_clr(self, button, clr):
+        self.dc.set_colour(colour=clr)
+        self.clr_label.destroy()
+        self.clr_label = tk.Label(self.clrLabFrame, bg=self.dc.line_colour)
+        self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
+        self.clr_label.config(width=4)
+        for but in self.clr_buttons:
+            but['state'] = tk.NORMAL
+        button['state'] = tk.DISABLED
+        
     def select_clr(self):
         clr = askcolor(color=self.dc.line_colour)[1]
-        print('selected colour:', clr)
         if not(clr == None):
             self.dc.set_colour(colour=clr)
+        self.clr_label.destroy()
+        self.clr_label = tk.Label(self.clrLabFrame, bg=self.dc.line_colour)
+        self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
+        self.clr_label.config(width=4)
         
     def save_figure(self):
         temp_file='temp.eps'
@@ -291,7 +379,7 @@ class DrawCanvas(tk.Canvas):
             self.undo_line()
         else:
             print('u.l.c:', event)
-            self.undo_line()
+            #self.undo_line()
 
     def key_e_callback(self, event):
         """
@@ -308,6 +396,19 @@ class DrawCanvas(tk.Canvas):
     def set_colour(self, colour):
         self.prev_line_colour = self.line_colour
         self.line_colour = colour
+
+    def set_line_width(self, size=None, incr=None, decr=None):
+        if not(size == None):
+            self.line_width = size
+        elif not(incr == None):
+            self.line_width += incr
+        elif not(decr == None):
+            self.line_width -= decr
+        else:
+            raise ValueError('Unknown error occurred')
+
+        if self.line_width > 200: self.line_width = 200
+        elif self.line_width < 1: self.line_width = 1
 
     def reset_colour(self):
         temp_clr = self.line_colour
