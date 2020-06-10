@@ -30,7 +30,6 @@ class MainWindow(tk.Tk):
         #self.frames[0] = page
         #page.addtag_all("all")
         #page.pack(fill=tk.BOTH, expand=True)
-        
 
         for F in (DrawPage, AdvSelPage):
             frame = F(container, self)
@@ -80,6 +79,8 @@ class DrawPage(tk.Frame):
         self.dc = DrawCanvas(self)
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
+        self.bind_all('<Button-4>', lambda e : self.__change_size(incr=1))
+        self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
 
     def __init_style_buttons(self, controller):
         self.style_buttons = []
