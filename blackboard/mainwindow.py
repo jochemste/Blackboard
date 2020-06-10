@@ -104,11 +104,10 @@ class DrawPage(tk.Frame):
                                     bg='grey')
         buttonDot.pack(side='top', fill='both', padx=5)
 
-        buttonText = tk.Button(frameCol2, text='A', font=('Courier', 12),
+        buttonText = tk.Button(frameCol2, text='A', font=('Courier', 12, 'bold'),
                                command=lambda : print('text selected'),
                                     bg='grey')
         buttonText.pack(side='top', fill='both', padx=5)
-
 
     def __init_clr_buttons(self, controller):
         self.clr_buttons = []
@@ -164,13 +163,13 @@ class DrawPage(tk.Frame):
                                 command=lambda : self.change_clr(buttonErase,
                                                                      clr=None),
                                 bg=None)
-        buttonErase.grid(column=0, row=3, padx=10, columnspan=2)
+        buttonErase.grid(column=0, row=3, padx=10, columnspan=2, sticky='n')
         self.clr_buttons.append(buttonErase)
 
         buttonSelClr = tk.Button(self.clrLabFrame, text='Select\ncolour',
                                 command=lambda : {self.select_clr()},
                                 bg='white')
-        buttonSelClr.grid(column=0, row=2, padx=10, columnspan=2)
+        buttonSelClr.grid(column=0, row=2, padx=10, columnspan=2, sticky='n')
         self.clr_buttons.append(buttonSelClr)
         self.__init_clr_label(clr='lightgrey')
 
