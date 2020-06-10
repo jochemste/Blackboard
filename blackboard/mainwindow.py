@@ -65,11 +65,13 @@ class DrawPage(tk.Frame):
         self.frameBut.config(cursor='hand1')
         self.frameBut.pack(side='left', fill='both')
         self.clrLabFrame = tk.LabelFrame(self.frameBut, text='Colours', bg='grey')
-        self.clrLabFrame.pack(side='top', padx=5)
+        self.clrLabFrame.pack(side='top', fill='both', padx=5)
         self.sizeLabFrame = tk.LabelFrame(self.frameBut, text='Size', bg='grey')
-        self.sizeLabFrame.pack(side='top', padx=5)
+        self.sizeLabFrame.pack(side='top', fill='both', padx=5)
+        self.styleLabFrame = tk.LabelFrame(self.frameBut, text='Style', bg='grey')
+        self.styleLabFrame.pack(side='top', fill='both', padx=5)
         self.menuLabFrame = tk.LabelFrame(self.frameBut, text='Menu', bg='grey')
-        self.menuLabFrame.pack(side='top', padx=5)
+        self.menuLabFrame.pack(side='top', fill='both', padx=5)
         
         self.__init_buttons(controller)
         self.__init_drawcanvas()
@@ -78,6 +80,34 @@ class DrawPage(tk.Frame):
         self.dc = DrawCanvas(self)
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
+
+    def __init_style_buttons(self, controller):
+        self.style_buttons = []
+        frameCol1 = tk.Frame(self.styleLabFrame, bg='grey')
+        frameCol2 = tk.Frame(self.styleLabFrame, bg='grey')
+        frameCol1.grid(column=0, row=1, pady=10)
+        frameCol2.grid(column=1, row=1, pady=10)
+
+        buttonPen = tk.Button(frameCol1, text=(u'\u2015'),
+                              command=lambda : print('line selected'),
+                                    bg='grey')
+        buttonPen.pack(side='top', fill='both', padx=5)
+
+        buttonDash = tk.Button(frameCol2, text=(u'\u002D\u002D\u002D'),
+                              command=lambda : print('dash selected'),
+                                    bg='grey')
+        buttonDash.pack(side='top', fill='both', padx=5)
+
+        buttonDot = tk.Button(frameCol1, text=(u'\u002E\u002E\u002E'),
+                              command=lambda : (print('dot'), print('selected')),
+                                    bg='grey')
+        buttonDot.pack(side='top', fill='both', padx=5)
+
+        buttonText = tk.Button(frameCol2, text='A', font=('Courier', 12),
+                               command=lambda : print('text selected'),
+                                    bg='grey')
+        buttonText.pack(side='top', fill='both', padx=5)
+
 
     def __init_clr_buttons(self, controller):
         self.clr_buttons = []
@@ -183,6 +213,7 @@ class DrawPage(tk.Frame):
     def __init_buttons(self, controller):
         self.__init_clr_buttons(controller)
         self.__init_size_buttons(controller)
+        self.__init_style_buttons(controller)
         self.__init_menu_buttons(controller)
 
     def __init_size_label(self, size):
