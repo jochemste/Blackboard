@@ -1,4 +1,5 @@
 from image_prc import image_prc
+from gui_utils import create_tooltip
 
 import os
 import tkinter as tk
@@ -72,8 +73,11 @@ class DrawPage(tk.Frame):
         self.menuLabFrame = tk.LabelFrame(self.frameBut, text='Menu', bg='grey')
         self.menuLabFrame.pack(side='top', fill='both', padx=5)
         
+        self.bind_all('<Control-Key-s>', lambda e: self.save_figure())
+
         self.__init_buttons(controller)
         self.__init_drawcanvas()
+        
         
     def __init_drawcanvas(self):
         self.dc = DrawCanvas(self)
@@ -93,21 +97,37 @@ class DrawPage(tk.Frame):
                               command=lambda : print('line selected'),
                                     bg='grey')
         buttonPen.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonPen, "Set style to pencil")
 
         buttonDash = tk.Button(frameCol2, text=(u'\u002D\u002D\u002D'),
                               command=lambda : print('dash selected'),
                                     bg='grey')
         buttonDash.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonDash, "Set style to dashes")
 
         buttonDot = tk.Button(frameCol1, text=(u'\u002E\u002E\u002E'),
                               command=lambda : (print('dot'), print('selected')),
                                     bg='grey')
         buttonDot.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonDot, "Set style to dots")
 
         buttonText = tk.Button(frameCol2, text='A', font=('Courier', 12, 'bold'),
                                command=lambda : print('text selected'),
                                     bg='grey')
         buttonText.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonText, "Set style to text typing")
+
+        buttonGraph = tk.Button(frameCol1, text=(u'\u301C'),
+                              command=lambda : (print('graph'), print('selected')),
+                                    bg='grey')
+        buttonGraph.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonGraph, "Set style to graph plotting")
+
+        buttonSquare = tk.Button(frameCol2, text=(u'\u25A1'),
+                              command=lambda : (print('square'), print('selected')),
+                                    bg='grey')
+        buttonSquare.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonSquare, "Set style to square drawing")
 
     def __init_clr_buttons(self, controller):
         self.clr_buttons = []
@@ -123,6 +143,8 @@ class DrawPage(tk.Frame):
         buttonColourLightgrey.pack(side='top', fill='both')
         buttonColourLightgrey['state'] = tk.DISABLED
         self.clr_buttons.append(buttonColourLightgrey)
+        create_tooltip(buttonColourLightgrey, "Set colour to light grey")
+        
         
         buttonColourRed = tk.Button(frameCol2, text='r',
                                     command=lambda : self.change_clr(buttonColourRed,
@@ -130,6 +152,7 @@ class DrawPage(tk.Frame):
                                     bg='red')
         buttonColourRed.pack(side='top', fill='both')
         self.clr_buttons.append(buttonColourRed)
+        create_tooltip(buttonColourRed, "Set colour to red")
 
         buttonColourGreen = tk.Button(frameCol1, text='g',
                                     command=lambda : self.change_clr(buttonColourGreen,
@@ -137,6 +160,7 @@ class DrawPage(tk.Frame):
                                     bg='green')
         buttonColourGreen.pack(side='top', fill='both')
         self.clr_buttons.append(buttonColourGreen)
+        create_tooltip(buttonColourGreen, "Set colour to green")
 
         buttonColourBlue = tk.Button(frameCol2, text='b',
                                     command=lambda : self.change_clr(buttonColourBlue,
@@ -144,6 +168,7 @@ class DrawPage(tk.Frame):
                                     bg='blue')
         buttonColourBlue.pack(side='top', fill='both')
         self.clr_buttons.append(buttonColourBlue)
+        create_tooltip(buttonColourBlue, "Set colour to blue")
 
         buttonColourYellow = tk.Button(frameCol1, text='y',
                                     command=lambda : self.change_clr(buttonColourYellow,
@@ -151,6 +176,7 @@ class DrawPage(tk.Frame):
                                     bg='yellow')
         buttonColourYellow.pack(side='top', fill='both')
         self.clr_buttons.append(buttonColourYellow)
+        create_tooltip(buttonColourYellow, "Set colour to yellow")
 
         buttonColourPurple = tk.Button(frameCol2, text='p',
                                     command=lambda : self.change_clr(buttonColourPurple,
@@ -158,6 +184,7 @@ class DrawPage(tk.Frame):
                                     bg='purple')
         buttonColourPurple.pack(side='top', fill='both')
         self.clr_buttons.append(buttonColourPurple)
+        create_tooltip(buttonColourPurple, "Set colour to purple")
 
         buttonErase = tk.Button(self.clrLabFrame, text='Eraser',
                                 command=lambda : self.change_clr(buttonErase,
@@ -165,12 +192,15 @@ class DrawPage(tk.Frame):
                                 bg=None)
         buttonErase.grid(column=0, row=3, padx=10, columnspan=2, sticky='n')
         self.clr_buttons.append(buttonErase)
+        create_tooltip(buttonErase, "Use the eraser")
 
         buttonSelClr = tk.Button(self.clrLabFrame, text='Select\ncolour',
                                 command=lambda : {self.select_clr()},
                                 bg='white')
         buttonSelClr.grid(column=0, row=2, padx=10, columnspan=2, sticky='n')
         self.clr_buttons.append(buttonSelClr)
+        create_tooltip(buttonSelClr, "Select a custom colour")
+        
         self.__init_clr_label(clr='lightgrey')
 
     def __init_size_buttons(self, controller):
@@ -178,37 +208,45 @@ class DrawPage(tk.Frame):
                                 command=lambda : self.__change_size(incr=1),
                                 bg='grey')
         buttonPlus.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonPlus, "Increase pen size")
 
         buttonMin = tk.Button(self.sizeLabFrame, text='-',
                                 command=lambda : self.__change_size(decr=1),
                                 bg='grey')
         buttonMin.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonMin, "Decrease pen size")
 
-        buttonMin = tk.Button(self.sizeLabFrame, text='reset',
+        buttonReset = tk.Button(self.sizeLabFrame, text='reset',
                                 command=lambda : self.__change_size(size=2),
                                 bg='grey')
-        buttonMin.pack(side='top', fill='both', padx=10)
+        buttonReset.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonReset, "Reset pen size")
+        
         self.__init_size_label(size=2)
         
     def __init_menu_buttons(self, controller):
         buttonExit = tk.Button(self.menuLabFrame, text='Exit',
                                  command=lambda : controller.destroy(), bg='grey')
         buttonExit.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonExit, "Exit the program")
 
         buttonClear = tk.Button(self.menuLabFrame, text='Clear',
                                command=lambda : {self.dc.clear()},
                                bg='grey')
         buttonClear.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonClear, "Clear the screen")
 
         buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
                                command=lambda : {self.dc.undo_line()},
                                bg='grey')
         buttonUndo.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonUndo, "Undo last move")
 
         buttonSave = tk.Button(self.menuLabFrame, text='Save',
                                command=lambda : {self.save_figure()},
                                bg='grey')
         buttonSave.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonSave, "Save drawing")
         
     def __init_buttons(self, controller):
         self.__init_clr_buttons(controller)
@@ -220,11 +258,13 @@ class DrawPage(tk.Frame):
         self.size_label = tk.Label(self.sizeLabFrame, text=str(size)+'px',
                                    bg='grey')
         self.size_label.pack(side='top', fill='both', padx=10)
+        create_tooltip(self.size_label, "Current size")
 
     def __init_clr_label(self, clr):
         self.clr_label = tk.Label(self.clrLabFrame, bg=str(clr))
         self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
         self.clr_label.config(width=4)
+        create_tooltip(self.clr_label, "Current colour")
 
     def __change_size(self, size=None, incr=None, decr=None):
         self.dc.set_line_width(size=size, incr=incr, decr=decr)
@@ -232,14 +272,15 @@ class DrawPage(tk.Frame):
         self.size_label = tk.Label(self.sizeLabFrame, text=str(self.dc.line_width)+'px',
                                    bg='grey')
         self.size_label.pack(side='bottom', fill='both', padx=10)
+        create_tooltip(self.size_label, "Current size")
         
-
     def change_clr(self, button, clr):
         self.dc.set_colour(colour=clr)
         self.clr_label.destroy()
         self.clr_label = tk.Label(self.clrLabFrame, bg=self.dc.line_colour)
         self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
         self.clr_label.config(width=4)
+        create_tooltip(self.clr_label, "Current colour")
         for but in self.clr_buttons:
             but['state'] = tk.NORMAL
         button['state'] = tk.DISABLED
@@ -312,8 +353,6 @@ class DrawCanvas(tk.Canvas):
 
         self.bind('<B1-Motion>', self.draw)
         self.bind('<Button-1>', self.draw)
-        #self.bind('<B1-Motion>', self.draw_line)
-        #self.bind('<Button-1>', self.draw_line)
         self.bind('<ButtonRelease-1>', self.mouse_released)
         self.bind('<Button-2>', self.draw_text)
         self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr=None)})
@@ -321,7 +360,7 @@ class DrawCanvas(tk.Canvas):
         self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_colour)})
         self.bind('<ButtonRelease-3>', self.mouse_released)
         self.bind_all('<Control-slash>', self.undo_line_callback)
-        self.bind_all('<Control-Key>', self.undo_line_callback)
+        self.bind_all('<Control-Key-z>', self.undo_line_callback)
         self.update()
         self.height =  self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
