@@ -1,5 +1,6 @@
 from image_prc import image_prc
 from gui_utils import create_tooltip
+from tk_shapes import Line, Text
 
 import os
 import tkinter as tk
@@ -13,7 +14,7 @@ class MainWindow(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__init_frames()
-        self.bind_all('<Key>', self.exit_window)
+        self.bind('<Key-Escape>', self.exit_window)
         self.title('Blackboard')
         self.geometry('800x800')
 
@@ -41,7 +42,6 @@ class MainWindow(tk.Tk):
         self.show_frame(DrawPage)
 
     def exit_window(self, event):
-        #print(event)
         if event.keysym == 'Escape':
             self.destroy()
     
@@ -94,7 +94,7 @@ class DrawPage(tk.Frame):
         frameCol2.grid(column=1, row=1, pady=10)
 
         buttonPen = tk.Button(frameCol1, text=(u'\u2015'),
-                              command=lambda : print('line selected'),
+                              command=lambda : self.dc.set_draw_style('pen'),
                                     bg='grey')
         buttonPen.pack(side='top', fill='both', padx=5)
         create_tooltip(buttonPen, "Set style to pencil")
@@ -112,7 +112,7 @@ class DrawPage(tk.Frame):
         create_tooltip(buttonDot, "Set style to dots")
 
         buttonText = tk.Button(frameCol2, text='A', font=('Courier', 12, 'bold'),
-                               command=lambda : print('text selected'),
+                               command=lambda : self.dc.set_draw_style('text'),
                                     bg='grey')
         buttonText.pack(side='top', fill='both', padx=5)
         create_tooltip(buttonText, "Set style to text typing")
@@ -225,10 +225,17 @@ class DrawPage(tk.Frame):
         self.__init_size_label(size=2)
         
     def __init_menu_buttons(self, controller):
-        buttonExit = tk.Button(self.menuLabFrame, text='Exit',
-                                 command=lambda : controller.destroy(), bg='grey')
-        buttonExit.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonExit, "Exit the program")
+        buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
+                               command=lambda : {self.dc.undo_line()},
+                               bg='grey')
+        buttonUndo.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonUndo, "Undo last move")
+        
+        buttonSave = tk.Button(self.menuLabFrame, text='Save',
+                               command=lambda : {self.save_figure()},
+                               bg='grey')
+        buttonSave.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonSave, "Save drawing")
 
         buttonClear = tk.Button(self.menuLabFrame, text='Clear',
                                command=lambda : {self.dc.clear()},
@@ -236,17 +243,11 @@ class DrawPage(tk.Frame):
         buttonClear.pack(side='top', fill='both', padx=10)
         create_tooltip(buttonClear, "Clear the screen")
 
-        buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
-                               command=lambda : {self.dc.undo_line()},
-                               bg='grey')
-        buttonUndo.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonUndo, "Undo last move")
+        buttonExit = tk.Button(self.menuLabFrame, text='Exit',
+                                 command=lambda : controller.destroy(), bg='grey')
+        buttonExit.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonExit, "Exit the program")
 
-        buttonSave = tk.Button(self.menuLabFrame, text='Save',
-                               command=lambda : {self.save_figure()},
-                               bg='grey')
-        buttonSave.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonSave, "Save drawing")
         
     def __init_buttons(self, controller):
         self.__init_clr_buttons(controller)
@@ -349,7 +350,7 @@ class DrawCanvas(tk.Canvas):
         self.line_width = 2
         self.lines_list = []
         self.cleared_lines = []
-        self.draw_style = 'free'
+        self.draw_style = 'pen'
 
         self.bind('<B1-Motion>', self.draw)
         self.bind('<Button-1>', self.draw)
@@ -361,19 +362,62 @@ class DrawCanvas(tk.Canvas):
         self.bind('<ButtonRelease-3>', self.mouse_released)
         self.bind_all('<Control-slash>', self.undo_line_callback)
         self.bind_all('<Control-Key-z>', self.undo_line_callback)
+        self.bind('<Key>', self.add_letter)
         self.update()
         self.height =  self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
+        self.focus_set()
         self.addtag_all('all')
 
     def draw(self, event):
-        if self.draw_style == 'free':
+        if self.draw_style == 'pen':
             self.draw_line(event)
         elif self.draw_style == 'text':
-            self.draw_text(event)
-        
+            self.set_text_pos(event)
+
+    def add_letter(self, event):
+        if self.draw_style == 'text':
+            if len(self.lines_list[-1]) == 1 and self.lines_list[-1][-1].style == 'text':
+                #add letter
+                print(event.char)
+                text=self.itemcget(self.lines_list[-1][-1].id_, 'text')+event.char
+                self.itemconfigure(self.lines_list[-1][-1].id_, text=text)
+            
+
+    def set_text_pos(self, event):
+        if self.x == None:
+            self.x=event.x-(self.line_width/2)-2
+            self.lines_list.append([])
+        if self.y == None:
+            self.y=event.y-(self.line_width/2)-2
+
+        self.lines_list[-1].append(Text(id_=self.create_text(event.x, event.y,
+                                                             fill=self.line_colour,
+                                                             font=("tahoma", "12", "normal"),
+                                                             text=""),
+                                        x=[self.x],
+                                        y=[self.y],
+                                        clr=self.line_colour,
+                                        style='text',
+                                        width=self.line_width,
+                                        text="Click the bubbles that are multiples of two.",
+                                        font=("tahoma", "12", "normal")))
+            
     def draw_text(self, event):
         print('d.t.:', event)
+
+        if self.x == None:
+            self.x=event.x-(self.line_width/2)-2
+            self.lines_list.append([])
+        if self.y == None:
+            self.y=event.y-(self.line_width/2)-2
+
+        
+        self.lines_list[-1].append(Text(id_=self.create_text(event.x, event.y,
+                                                             fill=self.line_colour,
+                                                             font=("tahoma", "12", "normal"),
+                                                             text="Click the bubbles that are multiples of two."),x=[self.x], y=[self.y], clr=self.line_colour, style='text', width=self.line_width,
+                                        text="Click the bubbles that are multiples of two.", font=("tahoma", "12", "normal")))
         
     def draw_line(self, event, clr=''):
         l_width = self.line_width
@@ -436,12 +480,14 @@ class DrawCanvas(tk.Canvas):
             del self.lines_list[-1]
         else:
             for line in self.cleared_lines:
-                self.draw_line_coords(x1=line.x[0], y1=line.y[0],
-                                      x2=line.x[1], y2=line.y[1],
-                                      clr=line.clr, width=line.width,
-                                      style=line.style)
-                #self.draw_line_coords(x1=line[0], y1=line[1],
-                #                      x2=line[2], y2=line[3])
+                if line.style=='pen':
+                    self.draw_line_coords(x1=line.x[0], y1=line.y[0],
+                                          x2=line.x[1], y2=line.y[1],
+                                          clr=line.clr, width=line.width,
+                                          style=line.style)
+                elif line.style=='text':
+                    #self.draw_text(
+                    pass
         
     def undo_line_callback(self, event):
         #print(event)
@@ -507,26 +553,28 @@ class DrawCanvas(tk.Canvas):
         self.delete('all')
         self.lines_list=[]
 
-class Line():
-    """
-    Storage class for canvas line attributes
-    """
-    id_: str
-    x: list
-    y: list
-    clr: str
-    style: str
-    width: int
 
-    def __init__(self, id_: str, x: list, y: list,
-                 clr: str=None, style=None, width=None):
-        self.id_ = id_
-        self.x = x
-        self.y = y
-        self.clr=clr
-        self.style=style
-        self.width=width
-        
+#class Line():
+#    """
+#    Storage class for canvas line attributes
+#    """
+#    id_: str
+#    x: list
+#    y: list
+#    clr: str
+#    style: str
+#    width: int
+#
+#    def __init__(self, id_: str, x: list, y: list,
+#                 clr: str=None, style=None, width=None):
+#        self.id_ = id_
+#        self.x = x
+#        self.y = y
+#        self.clr=clr
+#        self.style=style
+#        self.width=width
+
+    
 if __name__ == '__main__':
     app = MainWindow()
     app.mainloop()
