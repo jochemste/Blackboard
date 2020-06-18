@@ -1,6 +1,6 @@
 from image_prc import image_prc
 from gui_utils import create_tooltip
-from tk_shapes import Line, Text
+from tk_shapes import Line, Text, Graph
 
 import os
 import tkinter as tk
@@ -100,13 +100,13 @@ class DrawPage(tk.Frame):
         create_tooltip(buttonPen, "Set style to pencil")
 
         buttonDash = tk.Button(frameCol2, text=(u'\u002D\u002D\u002D'),
-                              command=lambda : print('dash selected'),
+                               command=lambda : self.dc.set_draw_style('dash'),
                                     bg='grey')
         buttonDash.pack(side='top', fill='both', padx=5)
         create_tooltip(buttonDash, "Set style to dashes")
 
         buttonDot = tk.Button(frameCol1, text=(u'\u002E\u002E\u002E'),
-                              command=lambda : (print('dot'), print('selected')),
+                              command=lambda : self.dc.set_draw_style('dot'),
                                     bg='grey')
         buttonDot.pack(side='top', fill='both', padx=5)
         create_tooltip(buttonDot, "Set style to dots")
@@ -118,16 +118,16 @@ class DrawPage(tk.Frame):
         create_tooltip(buttonText, "Set style to text typing")
 
         buttonGraph = tk.Button(frameCol1, text=(u'\u301C'),
-                              command=lambda : (print('graph'), print('selected')),
+                              command=lambda : self.dc.set_draw_style('graph'),
                                     bg='grey')
         buttonGraph.pack(side='top', fill='both', padx=5)
         create_tooltip(buttonGraph, "Set style to graph plotting")
 
         buttonSquare = tk.Button(frameCol2, text=(u'\u25A1'),
-                              command=lambda : (print('square'), print('selected')),
+                                 command=lambda : self.dc.set_draw_style('rect'),
                                     bg='grey')
         buttonSquare.pack(side='top', fill='both', padx=5)
-        create_tooltip(buttonSquare, "Set style to square drawing")
+        create_tooltip(buttonSquare, "Set style to rectangular drawing")
 
     def __init_clr_buttons(self, controller):
         self.clr_buttons = []
@@ -351,7 +351,10 @@ class DrawCanvas(tk.Canvas):
         self.lines_list = []
         self.cleared_lines = []
         self.draw_style = 'pen'
+        self.last_coord = dict(x= None, y= None)
+        self.graph_coords = dict(x= None, y= None)
 
+        self.bind('<Shift-Button-1>', self.draw_straight_line)
         self.bind('<B1-Motion>', self.draw)
         self.bind('<Button-1>', self.draw)
         self.bind('<ButtonRelease-1>', self.mouse_released)
@@ -370,18 +373,25 @@ class DrawCanvas(tk.Canvas):
         self.addtag_all('all')
 
     def draw(self, event):
-        if self.draw_style == 'pen':
-            self.draw_line(event)
-        elif self.draw_style == 'text':
+        if self.draw_style == 'text':
             self.set_text_pos(event)
+        elif self.draw_style == 'graph':
+            if self.graph_coords['x'] == None:
+               self.graph_coords = dict(x= event.x,
+                                        y= event.y)
+            else:
+                self.draw_graph(event)
+        else:
+            self.draw_line(event=event, style=self.draw_style)
 
     def add_letter(self, event):
         if self.draw_style == 'text':
-            if len(self.lines_list[-1]) == 1 and self.lines_list[-1][-1].style == 'text':
-                #add letter
-                print(event.char)
-                text=self.itemcget(self.lines_list[-1][-1].id_, 'text')+event.char
-                self.itemconfigure(self.lines_list[-1][-1].id_, text=text)
+            if len(self.lines_list):
+                if len(self.lines_list[-1]) == 1 and self.lines_list[-1][-1].style == 'text':
+                    #add letter
+                    text=self.itemcget(self.lines_list[-1][-1].id_, 'text')+event.char
+                    self.itemconfigure(self.lines_list[-1][-1].id_, text=text)
+                    self.lines_list[-1][-1].text=text
             
 
     def set_text_pos(self, event):
@@ -400,12 +410,81 @@ class DrawCanvas(tk.Canvas):
                                         clr=self.line_colour,
                                         style='text',
                                         width=self.line_width,
-                                        text="Click the bubbles that are multiples of two.",
+                                        text="",
                                         font=("tahoma", "12", "normal")))
+        
+    def draw_graph(self, event):
+        self.lines_list.append([])
+
+        x1 = self.graph_coords['x']
+        y1 = self.graph_coords['y']
+        x2, y2 = event.x, event.y
+
+        graph = Graph(x=[x1,x2],y=[y1,y2], clr=self.line_colour,
+                      width=self.line_width, style='graph')
+
+        graph.id_ = self.create_line(graph.get_xy_axis(),
+                               fill=self.line_colour,
+                               smooth=True,
+                               width=self.line_width,
+                               capstyle=tk.ROUND,
+                               splinesteps=36)
+
+        self.lines_list[-1].append(graph)
+
+        self.draw_text_coords('0', graph.get_origin()[0]-10, graph.get_origin()[1]+10)
+        
+        self.graph_coords['x']=None
+        self.graph_coords['y']=None
+
+    def draw_graph_coords(self, x, y, clr='', width=None):
+        self.lines_list.append([])
+
+        l_width=width
+        if l_width == None:
+            l_width = self.line_width
+
+        graph = Graph(x=x,y=y, clr=clr,
+                      width=l_width, style='graph')
+
+        graph.id_ = self.create_line(graph.get_xy_axis(),
+                               fill=self.line_colour,
+                               smooth=True,
+                               width=l_width,
+                               capstyle=tk.ROUND,
+                               splinesteps=36)
+
+        self.lines_list[-1].append(graph)
+
+        
+
+        self.draw_text_coords('0', graph.get_origin()[0]-10, graph.get_origin()[1]+10)
+        
+        self.graph_coords['x']=None
+        self.graph_coords['y']=None
+        
+
+    def draw_text_coords(self, text, x, y, clr='', font=None):
+        self.lines_list.append([])
+
+        if font == None:
+            font = ("tahoma", "12", "normal")
+        if clr == '':
+            clr = self.line_colour
+
+        self.lines_list[-1].append(Text(id_=self.create_text(x, y,
+                                                             fill=clr,
+                                                             font=font,
+                                                             text=text),
+                                        x=[self.x],
+                                        y=[self.y],
+                                        clr=clr,
+                                        style='text',
+                                        width=self.line_width,
+                                        text=text,
+                                        font=font))
             
     def draw_text(self, event):
-        print('d.t.:', event)
-
         if self.x == None:
             self.x=event.x-(self.line_width/2)-2
             self.lines_list.append([])
@@ -419,7 +498,124 @@ class DrawCanvas(tk.Canvas):
                                                              text="Click the bubbles that are multiples of two."),x=[self.x], y=[self.y], clr=self.line_colour, style='text', width=self.line_width,
                                         text="Click the bubbles that are multiples of two.", font=("tahoma", "12", "normal")))
         
-    def draw_line(self, event, clr=''):
+    def draw_line(self, event, clr='', style=None):
+        l_width = self.line_width
+        if clr == '':
+           clr = self.line_colour
+        if clr == None:
+            l_width = self.line_width*20
+        if style == None:
+            l_style=self.draw_style
+        else:
+            l_style = style
+
+        if self.x == None:
+            self.x=event.x-(self.line_width/2)-2
+            self.lines_list.append([])
+        if self.y == None:
+            self.y=event.y-(self.line_width/2)-2
+
+        x1, y1 = self.x, self.y
+        x2, y2 = event.x-2, event.y-2
+        self.x, self.y = event.x, event.y
+
+        if l_style == 'dash':
+            dash = (int(10*(l_width/2)), int(10*(l_width/2)))
+        elif l_style == 'dot':
+            dash=(1, int(10*(l_width/2)))
+        else:
+            dash=()
+        
+        l = Line(id_=self.create_line(x1,y1,
+                                      x2, y2,
+                                      fill=clr,
+                                      smooth=True,
+                                      width=l_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36),
+                 x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
+                 style=self.draw_style)
+        self.lines_list[-1].append(l)
+
+        self.last_coord['x'] = self.x
+        self.last_coord['y'] = self.y
+        
+    def draw_line_coords(self, x1, y1, x2, y2, clr='', width=None, style=None):
+        if width ==  None:
+            l_width = self.line_width
+        else:
+            l_width = width
+        if style == None:
+            l_style=self.draw_style
+        else:
+            l_style = style
+
+        if clr == '':
+           clr = self.line_colour
+        self.lines_list.append([])
+
+        if l_style == 'dash':
+            dash = (int(10*(l_width/2)), int(10*(l_width/2)))
+        elif l_style == 'dot':
+            dash=(1, int(10*(l_width/2)))
+        else:
+            dash=()
+
+        l = Line(id_=self.create_line(x1,y1,
+                                  x2, y2,
+                                      fill=clr,
+                                      smooth=True,
+                                      width=l_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36,
+                                      dash=dash),
+                 x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
+                 style=l_style)
+        self.lines_list[-1].append(l)
+
+        self.last_coord['x'] = x2
+        self.last_coord['y'] = y2
+
+    def draw_straight_line(self, event, clr=''):
+        l_width = self.line_width
+        if clr == '':
+           clr = self.line_colour
+        if clr == None:
+            l_width = self.line_width*20
+
+        self.lines_list.append([])
+
+        
+        x1, y1 = self.last_coord['x'], self.last_coord['y']
+        x2, y2 = event.x-2, event.y-2
+
+        self.x, self.y = event.x, event.y
+
+        if self.draw_style == 'dash':
+            dash = (int(10*(l_width/2)), int(10*(l_width/2)))
+        elif self.draw_style == 'dot':
+            dash=(1, int(10*(l_width/2)))
+        else:
+            dash=()
+
+
+        l = Line(id_=self.create_line((x1,y1,
+                                       x2, y2),
+                                      fill=clr,
+                                      smooth=False,
+                                      width=l_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36,
+                                      dash=dash),
+                 x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
+                 style=self.draw_style)
+            
+        self.lines_list[-1].append(l)
+
+        self.last_coord['x'] = self.x
+        self.last_coord['y'] = self.y
+
+    def draw_dash(self, event, clr=''):
         l_width = self.line_width
         if clr == '':
            clr = self.line_colour
@@ -442,35 +638,46 @@ class DrawCanvas(tk.Canvas):
                                       smooth=True,
                                       width=l_width,
                                       capstyle=tk.ROUND,
-                                      splinesteps=36),
+                                      splinesteps=36,
+                                      dash=(10, int(10*(l_width/2)))),
                  x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
                  style=self.draw_style)
         self.lines_list[-1].append(l)
-        
-    def draw_line_coords(self, x1, y1, x2, y2, clr='', width=None, style=None):
-        if width ==  None:
-            l_width = self.line_width
-        else:
-            l_width = width
-        if style == None:
-            l_style=self.draw_style
-        else:
-            l_style = style
 
+        self.last_coord['x'] = self.x
+        self.last_coord['y'] = self.y
+
+    def draw_dot(self, event, clr=''):
+        l_width = self.line_width
         if clr == '':
            clr = self.line_colour
-        self.lines_list.append([])
+        if clr == None:
+            l_width = self.line_width*20
 
+        if self.x == None:
+            self.x=event.x-(self.line_width/2)-2
+            self.lines_list.append([])
+        if self.y == None:
+            self.y=event.y-(self.line_width/2)-2
+
+        x1, y1 = self.x, self.y
+        x2, y2 = event.x-2, event.y-2
+        self.x, self.y = event.x, event.y
+        
         l = Line(id_=self.create_line(x1,y1,
-                                  x2, y2,
-                                  fill=clr,
-                                  smooth=True,
-                                  width=l_width,
-                                  capstyle=tk.ROUND,
-                                  splinesteps=36),
+                                      x2, y2,
+                                      fill=clr,
+                                      smooth=True,
+                                      width=l_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36,
+                                      dash=(1, 10)),
                  x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
-                 style=l_style)
+                 style=self.draw_style)
         self.lines_list[-1].append(l)
+
+        self.last_coord['x'] = self.x
+        self.last_coord['y'] = self.y
     
     def undo_line(self):
         if len(self.lines_list) >= 1:
@@ -478,33 +685,26 @@ class DrawCanvas(tk.Canvas):
                 self.delete(line.id_)
         
             del self.lines_list[-1]
+
+            self.last_coord['x'] = self.lines_list[-1][-1].x[-1]
+            self.last_coord['y'] = self.lines_list[-1][-1].y[-1]
         else:
             for line in self.cleared_lines:
-                if line.style=='pen':
+                if line.style=='pen' or line.style=='dash' or line.style=='dot':
                     self.draw_line_coords(x1=line.x[0], y1=line.y[0],
                                           x2=line.x[1], y2=line.y[1],
                                           clr=line.clr, width=line.width,
                                           style=line.style)
                 elif line.style=='text':
-                    #self.draw_text(
-                    pass
+                    self.draw_text_coords(text=line.text, x=line.x, y=line.y,
+                                          clr=line.clr, font=line.font)
+                elif line.style=='graph':
+                    self.draw_graph_coords(x=line.x, y=line.y,
+                                           clr=line.clr, width=line.width)
         
     def undo_line_callback(self, event):
-        #print(event)
         if (event.char == event.keysym or len(event.char)==1) and ('slash' in event.keysym or 'z' in event.keysym):
             self.undo_line()
-        else:
-            print('u.l.c:', event)
-            #self.undo_line()
-
-    def key_e_callback(self, event):
-        """
-        Key event handler
-        """
-        print('k.e.h.:', event)
-        if (event.char == event.keysym or len(event.char)==1):
-            if ('slash' in event.keysym or 'z' in event.keysym):
-                self.undo_line()
 
     def set_draw_style(self, style: str):
         self.draw_style = style
@@ -532,6 +732,8 @@ class DrawCanvas(tk.Canvas):
         self.prev_line_colour = temp_clr
         
     def mouse_released(self, event):
+        self.last_coord['x'] = self.x
+        self.last_coord['y'] = self.y
         self.x = None
         self.y = None
 
