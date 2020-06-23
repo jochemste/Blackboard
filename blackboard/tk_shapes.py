@@ -18,7 +18,14 @@ class BaseLine():
         for i in range(len(x)):
             c.append(x[i], y[i])
 
-        return c
+    def __str__(self):
+        string = 'x:' + str(self.x) \
+            + ' y:' + str(self.y) \
+            + ' clr:' + str(self.clr) \
+            + ' width:' + str(self.width) \
+            + ' style:' + str(self.style)
+
+        return string
 
 
 class Line(BaseLine):
@@ -69,6 +76,21 @@ class Graph():
 
     def get_origin(self):
         return (self.x[0], self.y[1])
+
+    def __str__(self):
+        string = 'coords:[' + str(self.x[0]) +', '\
+            + str(self.y[0]) + ']-[' \
+            + str(self.x[0])  +', '\
+            + str(self.y[1]) + ']-[' \
+            + str(self.x[0])  +', '\
+            + str(self.y[1]) + ']-[' \
+            + str(self.x[1])  +', '\
+            + str(self.y[1]) + ']' \
+            + ' clr:' + str(self.clr) \
+            + ' width:' + str(self.width) \
+            + ' style:' + str(self.style)
+
+        return string
 
 class Triangle():
     pass

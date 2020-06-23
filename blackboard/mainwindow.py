@@ -448,7 +448,7 @@ class DrawCanvas(tk.Canvas):
                       width=l_width, style='graph')
 
         graph.id_ = self.create_line(graph.get_xy_axis(),
-                               fill=self.line_colour,
+                               fill=clr,
                                smooth=True,
                                width=l_width,
                                capstyle=tk.ROUND,
@@ -458,7 +458,7 @@ class DrawCanvas(tk.Canvas):
 
         
 
-        self.draw_text_coords('0', graph.get_origin()[0]-10, graph.get_origin()[1]+10)
+        #self.draw_text_coords('0', graph.get_origin()[0]-10, graph.get_origin()[1]+10)
         
         self.graph_coords['x']=None
         self.graph_coords['y']=None
@@ -472,17 +472,19 @@ class DrawCanvas(tk.Canvas):
         if clr == '':
             clr = self.line_colour
 
-        self.lines_list[-1].append(Text(id_=self.create_text(x, y,
-                                                             fill=clr,
-                                                             font=font,
-                                                             text=text),
-                                        x=[self.x],
-                                        y=[self.y],
-                                        clr=clr,
-                                        style='text',
-                                        width=self.line_width,
-                                        text=text,
-                                        font=font))
+        t = Text(id_=self.create_text(x, y,
+                                      fill=clr,
+                                      font=font,
+                                      text=text),
+                 x=[x],
+                 y=[y],
+                 clr=clr,
+                 style='text',
+                 width=self.line_width,
+                 text=text,
+                 font=font)
+
+        self.lines_list[-1].append(t)
             
     def draw_text(self, event):
         if self.x == None:
@@ -689,22 +691,14 @@ class DrawCanvas(tk.Canvas):
             self.last_coord['x'] = self.lines_list[-1][-1].x[-1]
             self.last_coord['y'] = self.lines_list[-1][-1].y[-1]
         else:
-            for line in self.cleared_lines:
-                if line.style=='pen' or line.style=='dash' or line.style=='dot':
-                    self.draw_line_coords(x1=line.x[0], y1=line.y[0],
-                                          x2=line.x[1], y2=line.y[1],
-                                          clr=line.clr, width=line.width,
-                                          style=line.style)
-                elif line.style=='text':
-                    self.draw_text_coords(text=line.text, x=line.x, y=line.y,
-                                          clr=line.clr, font=line.font)
-                elif line.style=='graph':
-                    self.draw_graph_coords(x=line.x, y=line.y,
-                                           clr=line.clr, width=line.width)
+            self.undo_clear()
         
     def undo_line_callback(self, event):
         if (event.char == event.keysym or len(event.char)==1) and ('slash' in event.keysym or 'z' in event.keysym):
-            self.undo_line()
+            try:
+                self.undo_line()
+            except:
+                pass
 
     def set_draw_style(self, style: str):
         self.draw_style = style
@@ -749,32 +743,27 @@ class DrawCanvas(tk.Canvas):
 
     def clear(self):
         self.cleared_lines = []
+
         for lines in self.lines_list:
             for line in lines:
                 self.cleared_lines.append(line)
         self.delete('all')
         self.lines_list=[]
 
+    def undo_clear(self):
+        for line in self.cleared_lines:
+            if line.style=='pen' or line.style=='dash' or line.style=='dot':
+                self.draw_line_coords(x1=line.x[0], y1=line.y[0],
+                                      x2=line.x[1], y2=line.y[1],
+                                      clr=line.clr, width=line.width,
+                                      style=line.style)
+            elif line.style=='text':
+                self.draw_text_coords(text=line.text, x=line.x, y=line.y,
+                                      clr=line.clr, font=line.font)
+            elif line.style=='graph':
+                self.draw_graph_coords(x=line.x, y=line.y,
+                                       clr=line.clr, width=line.width)
 
-#class Line():
-#    """
-#    Storage class for canvas line attributes
-#    """
-#    id_: str
-#    x: list
-#    y: list
-#    clr: str
-#    style: str
-#    width: int
-#
-#    def __init__(self, id_: str, x: list, y: list,
-#                 clr: str=None, style=None, width=None):
-#        self.id_ = id_
-#        self.x = x
-#        self.y = y
-#        self.clr=clr
-#        self.style=style
-#        self.width=width
 
     
 if __name__ == '__main__':

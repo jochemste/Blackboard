@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>blackboard package &#8212; Blackboard 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="blackboard-package">
+<h1>blackboard package<a class="headerlink" href="#blackboard-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-blackboard.gui_utils">
+<span id="blackboard-gui-utils-module"></span><h2>blackboard.gui_utils module<a class="headerlink" href="#module-blackboard.gui_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="blackboard.gui_utils.ToolTip">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.gui_utils.</code><code class="sig-name descname">ToolTip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">widget</span></em>, <em class="sig-param"><span class="n">waittime</span><span class="o">=</span><span class="default_value">400</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.gui_utils.ToolTip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="blackboard.gui_utils.ToolTip.hidetip">
+<code class="sig-name descname">hidetip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.gui_utils.ToolTip.hidetip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.gui_utils.ToolTip.schedule">
+<code class="sig-name descname">schedule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.gui_utils.ToolTip.schedule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.gui_utils.ToolTip.showtip">
+<code class="sig-name descname">showtip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">event</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.gui_utils.ToolTip.showtip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display text in tooltip window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.gui_utils.ToolTip.unschedule">
+<code class="sig-name descname">unschedule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.gui_utils.ToolTip.unschedule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="blackboard.gui_utils.create_tooltip">
+<code class="sig-prename descclassname">blackboard.gui_utils.</code><code class="sig-name descname">create_tooltip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">widget</span></em>, <em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.gui_utils.create_tooltip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-blackboard.image_prc">
+<span id="blackboard-image-prc-module"></span><h2>blackboard.image_prc module<a class="headerlink" href="#module-blackboard.image_prc" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="blackboard.image_prc.Image_prc">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.image_prc.</code><code class="sig-name descname">Image_prc</code><a class="headerlink" href="#blackboard.image_prc.Image_prc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="blackboard.image_prc.Image_prc.change_clr">
+<code class="sig-name descname">change_clr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">rgb</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">new_rgb</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">255</span></em>, <em class="sig-param"><span class="n">img_ext</span><span class="o">=</span><span class="default_value">'PNG'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.image_prc.Image_prc.change_clr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.image_prc.Image_prc.invert_clrs">
+<code class="sig-name descname">invert_clrs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">img_ext</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'PNG'</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">255</span></em>, <em class="sig-param"><span class="n">excl_rgb</span><span class="o">=</span><span class="default_value">[- 1, - 1, - 1]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.image_prc.Image_prc.invert_clrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackboard.mainwindow">
+<span id="blackboard-mainwindow-module"></span><h2>blackboard.mainwindow module<a class="headerlink" href="#module-blackboard.mainwindow" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="blackboard.mainwindow.AdvSelPage">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.mainwindow.</code><code class="sig-name descname">AdvSelPage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">controller</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.AdvSelPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tkinter.ttk.Frame</span></code></p>
+<p>Advanced selection page to insert graph templates and such</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.mainwindow.DrawCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.mainwindow.</code><code class="sig-name descname">DrawCanvas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tkinter.Canvas</span></code></p>
+<p>A custom Canvas to draw on</p>
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.add_letter">
+<code class="sig-name descname">add_letter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.add_letter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.cleared_lines">
+<code class="sig-name descname">cleared_lines</code><em class="property">: list</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.cleared_lines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_dash">
+<code class="sig-name descname">draw_dash</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_dash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_dot">
+<code class="sig-name descname">draw_dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_dot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_graph">
+<code class="sig-name descname">draw_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_graph_coords">
+<code class="sig-name descname">draw_graph_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_graph_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_line">
+<code class="sig-name descname">draw_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_line_coords">
+<code class="sig-name descname">draw_line_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">y1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">y2</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_line_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_straight_line">
+<code class="sig-name descname">draw_straight_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_straight_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_style">
+<code class="sig-name descname">draw_style</code><em class="property">: str</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_text">
+<code class="sig-name descname">draw_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.draw_text_coords">
+<code class="sig-name descname">draw_text_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">font</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.draw_text_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.drawcanvas">
+<code class="sig-name descname">drawcanvas</code><em class="property">: tk.Canvas</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.drawcanvas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.height">
+<code class="sig-name descname">height</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.height" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.line_colour">
+<code class="sig-name descname">line_colour</code><em class="property">: str</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.line_colour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.line_width">
+<code class="sig-name descname">line_width</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.line_width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.lines_list">
+<code class="sig-name descname">lines_list</code><em class="property">: list</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.lines_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.mouse_released">
+<code class="sig-name descname">mouse_released</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.mouse_released" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.on_resize">
+<code class="sig-name descname">on_resize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.on_resize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.prev_line_colour">
+<code class="sig-name descname">prev_line_colour</code><em class="property">: str</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.prev_line_colour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.reset_colour">
+<code class="sig-name descname">reset_colour</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.reset_colour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.set_colour">
+<code class="sig-name descname">set_colour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">colour</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.set_colour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.set_draw_style">
+<code class="sig-name descname">set_draw_style</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">style</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.set_draw_style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.set_line_width">
+<code class="sig-name descname">set_line_width</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">incr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">decr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.set_line_width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.set_text_pos">
+<code class="sig-name descname">set_text_pos</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.set_text_pos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.undo_line">
+<code class="sig-name descname">undo_line</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.undo_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawCanvas.undo_line_callback">
+<code class="sig-name descname">undo_line_callback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.undo_line_callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.width">
+<code class="sig-name descname">width</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.x">
+<code class="sig-name descname">x</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawCanvas.y">
+<code class="sig-name descname">y</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawCanvas.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.mainwindow.DrawPage">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.mainwindow.</code><code class="sig-name descname">DrawPage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">controller</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tkinter.Frame</span></code></p>
+<p>A page, dedicated to drawing on a DrawCanvas</p>
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawPage.change_clr">
+<code class="sig-name descname">change_clr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">button</span></em>, <em class="sig-param"><span class="n">clr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawPage.change_clr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawPage.drawcanvas">
+<code class="sig-name descname">drawcanvas</code><em class="property">: tk.Canvas</em><a class="headerlink" href="#blackboard.mainwindow.DrawPage.drawcanvas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawPage.frameBut">
+<code class="sig-name descname">frameBut</code><em class="property">: tk.Frame</em><a class="headerlink" href="#blackboard.mainwindow.DrawPage.frameBut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawPage.line_colour">
+<code class="sig-name descname">line_colour</code><em class="property">: str</em><a class="headerlink" href="#blackboard.mainwindow.DrawPage.line_colour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawPage.save_figure">
+<code class="sig-name descname">save_figure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawPage.save_figure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawPage.select_clr">
+<code class="sig-name descname">select_clr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawPage.select_clr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.DrawPage.update_drawcanvas">
+<code class="sig-name descname">update_drawcanvas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.DrawPage.update_drawcanvas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawPage.x">
+<code class="sig-name descname">x</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawPage.x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.mainwindow.DrawPage.y">
+<code class="sig-name descname">y</code><em class="property">: int</em><a class="headerlink" href="#blackboard.mainwindow.DrawPage.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.mainwindow.MainWindow">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.mainwindow.</code><code class="sig-name descname">MainWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.MainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tkinter.Tk</span></code></p>
+<dl class="py method">
+<dt id="blackboard.mainwindow.MainWindow.exit_window">
+<code class="sig-name descname">exit_window</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.MainWindow.exit_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.mainwindow.MainWindow.show_frame">
+<code class="sig-name descname">show_frame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.mainwindow.MainWindow.show_frame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackboard.tk_shapes">
+<span id="blackboard-tk-shapes-module"></span><h2>blackboard.tk_shapes module<a class="headerlink" href="#module-blackboard.tk_shapes" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="blackboard.tk_shapes.BaseLine">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.tk_shapes.</code><code class="sig-name descname">BaseLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">clr</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.BaseLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.BaseLine.clr">
+<code class="sig-name descname">clr</code><em class="property">: str</em><a class="headerlink" href="#blackboard.tk_shapes.BaseLine.clr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.tk_shapes.BaseLine.coords">
+<code class="sig-name descname">coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.BaseLine.coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.BaseLine.style">
+<code class="sig-name descname">style</code><em class="property">: str</em><a class="headerlink" href="#blackboard.tk_shapes.BaseLine.style" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.BaseLine.width">
+<code class="sig-name descname">width</code><em class="property">: int</em><a class="headerlink" href="#blackboard.tk_shapes.BaseLine.width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.BaseLine.x">
+<code class="sig-name descname">x</code><em class="property">: list</em><a class="headerlink" href="#blackboard.tk_shapes.BaseLine.x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.BaseLine.y">
+<code class="sig-name descname">y</code><em class="property">: list</em><a class="headerlink" href="#blackboard.tk_shapes.BaseLine.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.tk_shapes.Graph">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.tk_shapes.</code><code class="sig-name descname">Graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">clr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="blackboard.tk_shapes.Graph.get_origin">
+<code class="sig-name descname">get_origin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Graph.get_origin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.tk_shapes.Graph.get_x_axis">
+<code class="sig-name descname">get_x_axis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Graph.get_x_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.tk_shapes.Graph.get_xy_axis">
+<code class="sig-name descname">get_xy_axis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Graph.get_xy_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="blackboard.tk_shapes.Graph.get_y_axis">
+<code class="sig-name descname">get_y_axis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Graph.get_y_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.Graph.id_">
+<code class="sig-name descname">id_</code><em class="property">: list</em><a class="headerlink" href="#blackboard.tk_shapes.Graph.id_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.tk_shapes.Line">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.tk_shapes.</code><code class="sig-name descname">Line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id_</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">clr</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#blackboard.tk_shapes.BaseLine" title="blackboard.tk_shapes.BaseLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">blackboard.tk_shapes.BaseLine</span></code></a></p>
+<p>Storage class for canvas line attributes</p>
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.Line.id_">
+<code class="sig-name descname">id_</code><em class="property">: str</em><a class="headerlink" href="#blackboard.tk_shapes.Line.id_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.tk_shapes.Square">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.tk_shapes.</code><code class="sig-name descname">Square</code><a class="headerlink" href="#blackboard.tk_shapes.Square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.tk_shapes.Text">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.tk_shapes.</code><code class="sig-name descname">Text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id_</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">clr</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">font</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#blackboard.tk_shapes.Text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#blackboard.tk_shapes.Line" title="blackboard.tk_shapes.Line"><code class="xref py py-class docutils literal notranslate"><span class="pre">blackboard.tk_shapes.Line</span></code></a></p>
+<dl class="py attribute">
+<dt id="blackboard.tk_shapes.Text.id_">
+<code class="sig-name descname">id_</code><a class="headerlink" href="#blackboard.tk_shapes.Text.id_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="blackboard.tk_shapes.Triangle">
+<em class="property">class </em><code class="sig-prename descclassname">blackboard.tk_shapes.</code><code class="sig-name descname">Triangle</code><a class="headerlink" href="#blackboard.tk_shapes.Triangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackboard">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-blackboard" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Blackboard</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Jochem Stevense.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/blackboard.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
