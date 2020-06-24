@@ -1,6 +1,7 @@
 from image_prc import image_prc
 from gui_utils import create_tooltip
 from tk_shapes import Line, Text, Graph
+from shape_det import Shape_detector
 
 import os
 import tkinter as tk
@@ -730,6 +731,50 @@ class DrawCanvas(tk.Canvas):
         self.last_coord['y'] = self.y
         self.x = None
         self.y = None
+        if self.draw_style == 'pen' or self.draw_style == 'dot' or self.draw_style == 'dash':
+            self.shape_correct()
+
+    def shape_correct(self):
+        s=Shape_detector()
+        x, y=[], []
+        for line in self.lines_list[-1]:
+            #if line.style == 'pen' or line.style == 'dot' or line.style == 'dash':
+            for x_ in line.x:
+                x.append(x_)
+            for y_ in line.y:
+                y.append(y_)
+        shape = s.get_shape(x=x, y=y, margin=30)
+        print(shape)
+
+        if shape == 'line':
+            coords=[]
+            x, y=[], []
+            x, y=s.shape['x'], s.shape['y']
+
+            line=self.lines_list[-1][-1]
+            for line in self.lines_list[-1]:
+                self.delete(line.id_)
+            for i in range(1, len(x)):
+                self.draw_line_coords(x1=x[i-1], y1=y[i-1],
+                                      x2=x[i], y2=y[i],
+                                      clr=line.clr,
+                                      width=line.width,
+                                      style=line.style)
+
+
+        elif shape == 'circle':
+            coords=[]
+            x, y=s.shape['x'], s.shape['y']
+
+            line=self.lines_list[-1][-1]
+            for line in self.lines_list[-1]:
+                self.delete(line.id_)
+            for i in range(1, len(x)):
+                self.draw_line_coords(x1=x[i-1], y1=y[i-1],
+                                      x2=x[i], y2=y[i],
+                                      clr=line.clr,
+                                      width=line.width,
+                                      style=line.style)
 
     def on_resize(self, event):
         wscale = float(event.width)/self.width
