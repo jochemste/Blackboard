@@ -44,6 +44,15 @@ class Line(BaseLine):
         self.style=style
         self.width=width
 
+    def __str__(self):
+        string = 'id_:' + str(self.id_) \
+            + ' x:' + str(self.x) \
+            + ' y:' + str(self.y) \
+            + ' clr:' + str(self.clr) \
+            + ' width:' + str(self.width) \
+            + ' style:' + str(self.style)
+        return string
+
 class Graph():
     id_: list
 

@@ -12,10 +12,60 @@ class Shape_detector():
     def get_shape(self, x, y, margin=20):
         if self.is_line(x=x, y=y, margin=margin):
             return 'line'
+        elif self.is_triangle(x=x, y=y, margin=margin):
+            return 'triangle'
         elif self.is_circle(x=x, y=y, margin=margin*2):
             return 'circle'
         else:
             return 'unknown'
+
+    def is_line(self, x, y, margin):
+        # y = a*x+b
+        perc_step = 100/len(x)
+        perc=0
+
+        a, b = x, y
+
+        if self.line_vert(x):
+            print('repeat process but process x instead of y')
+            a, b = y, x
+
+        try:
+            slope = abs(b[-1]-b[0])/(abs(a[-1]-a[0]))
+        except ZeroDivisionError:
+            slope=0
+            print('Zero division error occurred a[-1]=', a[-1],
+                  'a[0]=', a[0])
+            
+        if self.line_descends(b):
+            slope *= -1
+        if self.line_reversed(a):
+            slope *= -1
+
+        offset_b=b[0]
+        b_line = []
+
+        if slope == 0:
+            y_step = abs(max(b)-min(b))/len(b)
+            for i in range(len(b)):
+                b_line.append(min(b)+(i*b_step))
+        else:
+            for a_line in a:
+                b_line.append(slope*(a_line-a[0])+offset_b)
+
+        for i in range(len(x)):
+            if abs(b_line[i]-y[i]) <= margin:
+                perc += perc_step
+
+        #print('line',perc, '%')
+        if perc > 80:
+            self.shape = dict(x=x, y=b_line)
+            return True
+        else:
+            #print('slope', slope, str(perc)+'%')
+            for i in range(len(b_line)):
+                pass#print('x', x[i], 'y', y[i], 'b_line', b_line[i])
+            return False
 
     def is_circle(self, x, y, margin):
         if len(x) < 10:
@@ -54,7 +104,7 @@ class Shape_detector():
         orig_new['y'] = ((max(coords['y'])-min(coords['y']))/2)+min(coords['y'])
 
         perc = (perc_x+perc_y) / 2
-        #print('circle', perc, '%', 'x', perc_x, '%', 'y', perc_y, '%')
+        #print('circle', perc, '%')
                 
         if perc >= 80:
             self.shape = coords
@@ -62,52 +112,33 @@ class Shape_detector():
         else:
             return False
 
-    def is_line(self, x, y, margin):
-        # y = a*x+b
-
-        #print('x[0], x[-1], y[0], y[-1]')
-        #print(x[0], x[-1], y[0], y[-1])
-        
+    def is_triangle(self, x, y, margin):
+        #2a/Pi arcsin(sin(2Pi/p * x))
+        perc_x, perc_y = 0, 0
         perc_step = 100/len(x)
-        perc=0
 
-        y_extr = [y[0], y[-1]]
-        x_extr = [x[0], x[-1]]
+        orig = dict(x=x[0], y=y[0])
 
+        abc = dict(x=[], y=[])
+        abc['x'].append(min(x))
+        abc['y'].append(max(y))
+        
+        abc['x'].append(max(x))
+        abc['y'].append(max(y))
+        
+        abc['x'].append(abs(max(x)-min(x))+min(x))
+        abc['y'].append(min(y))
 
-        slope = abs(y[-1]-y[0])/(abs(x[-1]-x[0]))
-
-        if self.line_descends(y):
-            slope *= -1
-        if self.line_reversed(x):
-            slope *= -1
-
-        #slope = (y[-1]-y[0])/len(y)
-        offset_y=y[0]
-        y_line = []
-        for x_line in x:
-            y_line.append(slope*(x_line-x[0])+offset_y)
-
-        #print(slope, '*(x[i]-', x[0], ')+', offset_y)
-        #print('x[i]', 'y[i]', 'x[i]', 'y_line[i]')
-        for i in range(len(x)):
-            if abs(y_line[i]-y[i]) <= margin:
-                perc += perc_step
-            #print(x[i], y[i], x[i], y_line[i])
-
-        print('line',perc)
+        perc = (perc_x + perc_y) / 2
         if perc > 80:
             self.shape = dict(x=x, y=y_line)
             return True
-        else:
-            return False
-        
+
+        return False
 
     def line_descends(self, y):
         if y[0] < y[-1]:
-            #print('line descends')
             return True
-        #print('line ascends')
         return False
 
     def line_reversed(self, x):
@@ -121,6 +152,13 @@ class Shape_detector():
         return False
 
     def line_vert(self, x):
-        if x[0] == x[-1]:
+        vals=[]
+        for val in x:
+            if not(val in vals):
+                vals.append(val)
+        #print(len(vals), len(x), (len(vals)/len(x)*100))
+
+        if ((len(vals)/len(x)*100) < 15) or (x[-1] == x[0]):
+            print('vertical')
             return True
         return False
