@@ -10,26 +10,42 @@ class Shape_detector():
         self.shape = dict(x=None, y=None)
 
     def get_shape(self, x, y, margin=20):
-        if self.is_line(x=x, y=y, margin=margin):
+        """
+        Returns the shape name
+        """
+        #relative_margin = margin*len(x)/200
+        #relative_margin = margin*math.sqrt(len(x))/10
+        relative_margin = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
+        
+        if not(len(x) == len(y)):
+            print('ERROR: shape coordinate lengths do not match')
+            return 'unknown'
+        elif self.is_line(x=x, y=y, margin=relative_margin):
             return 'line'
-        elif self.is_triangle(x=x, y=y, margin=margin):
+        elif self.is_triangle(x=x, y=y, margin=relative_margin):
             return 'triangle'
-        elif self.is_circle(x=x, y=y, margin=margin*2):
+        elif self.is_circle(x=x, y=y, margin=relative_margin*2):
             return 'circle'
         else:
             return 'unknown'
 
     def is_line(self, x, y, margin):
+        """
+        Check if the given coordinates form a 
+        linear shape within the given margin
+        """
         # y = a*x+b
         perc_step = 100/len(x)
         perc=0
 
         a, b = x, y
 
+        # invert x and y coordinates for vertical lines
         if self.line_vert(x):
             print('repeat process but process x instead of y')
             a, b = y, x
 
+        # check for zero division in slope calculations
         try:
             slope = abs(b[-1]-b[0])/(abs(a[-1]-a[0]))
         except ZeroDivisionError:
@@ -46,28 +62,32 @@ class Shape_detector():
         b_line = []
 
         if slope == 0:
-            y_step = abs(max(b)-min(b))/len(b)
+            b_step = abs(max(b)-min(b))/len(b)
             for i in range(len(b)):
                 b_line.append(min(b)+(i*b_step))
         else:
-            for a_line in a:
-                b_line.append(slope*(a_line-a[0])+offset_b)
+            for a_coord in a:
+                b_line.append(slope*(a_coord-a[0])+offset_b)
 
         for i in range(len(x)):
             if abs(b_line[i]-y[i]) <= margin:
                 perc += perc_step
 
-        #print('line',perc, '%')
+        print('line',perc, '%')
         if perc > 80:
             self.shape = dict(x=x, y=b_line)
             return True
         else:
-            #print('slope', slope, str(perc)+'%')
+            print('margin: ', margin, ' slope: ', slope)
             for i in range(len(b_line)):
-                pass#print('x', x[i], 'y', y[i], 'b_line', b_line[i])
+                print('a', a[i], 'b', b[i], 'b_line', b_line[i])
             return False
 
     def is_circle(self, x, y, margin):
+        """
+        Check if the given coordinates form a 
+        circular shape within the given margin
+        """
         if len(x) < 10:
             return False
         
@@ -113,6 +133,10 @@ class Shape_detector():
             return False
 
     def is_triangle(self, x, y, margin):
+        """
+        Check if the given coordinates form a 
+        triangular shape within the given margin
+        """
         #2a/Pi arcsin(sin(2Pi/p * x))
         perc_x, perc_y = 0, 0
         perc_step = 100/len(x)
@@ -137,21 +161,33 @@ class Shape_detector():
         return False
 
     def line_descends(self, y):
+        """
+        Check if line is sloping down or not
+        """
         if y[0] < y[-1]:
             return True
         return False
 
     def line_reversed(self, x):
+        """
+        Check if line starts at a larger X than where it ends
+        """
         if x[-1] > x[0]:
             return True
         return False
 
     def line_horiz(self, y):
+        """
+        Check if line is horizontal
+        """
         if y[0] == y[-1]:
             return True
         return False
 
     def line_vert(self, x):
+        """
+        Check if line is vertical or not
+        """
         vals=[]
         for val in x:
             if not(val in vals):
@@ -162,3 +198,13 @@ class Shape_detector():
             print('vertical')
             return True
         return False
+
+    def get_line_length(self, x, y):
+        """
+        Calculates the length of a line
+        """
+        x_length = max(x) - min(x)
+        y_length = max(y) - min(y)
+
+        result = math.sqrt((x_length*x_length)+(y_length*y_length))
+        return result
