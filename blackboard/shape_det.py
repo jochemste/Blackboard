@@ -15,8 +15,9 @@ class Shape_detector():
         """
         #relative_margin = margin*len(x)/200
         #relative_margin = margin*math.sqrt(len(x))/10
-        relative_margin = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
         
+        relative_margin = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
+        rel_margin_circ = margin*math.sqrt(len(x))/10
         if not(len(x) == len(y)):
             print('ERROR: shape coordinate lengths do not match')
             return 'unknown'
@@ -70,17 +71,21 @@ class Shape_detector():
                 b_line.append(slope*(a_coord-a[0])+offset_b)
 
         for i in range(len(x)):
-            if abs(b_line[i]-y[i]) <= margin:
+            if abs(b_line[i]-b[i]) <= margin:
                 perc += perc_step
 
-        print('line',perc, '%')
+        #print('line',perc, '%')
         if perc > 80:
-            self.shape = dict(x=x, y=b_line)
+            if x == a:
+                self.shape = dict(x=a, y=b_line)
+            else:
+                self.shape = dict(x=b_line, y=a)
             return True
         else:
-            print('margin: ', margin, ' slope: ', slope)
+            #print('margin: ', margin, ' slope: ', slope)
             for i in range(len(b_line)):
-                print('a', a[i], 'b', b[i], 'b_line', b_line[i])
+                #print('a', a[i], 'b', b[i], 'b_line', b_line[i])
+                pass
             return False
 
     def is_circle(self, x, y, margin):
@@ -94,6 +99,7 @@ class Shape_detector():
         perc_step = 100/len(x)
         perc=0
         perc_x, perc_y = 0, 0
+
         radius_x = (max(x) - min(x)) / 2
         radius_y = (max(y) - min(y)) / 2
 
@@ -124,7 +130,7 @@ class Shape_detector():
         orig_new['y'] = ((max(coords['y'])-min(coords['y']))/2)+min(coords['y'])
 
         perc = (perc_x+perc_y) / 2
-        #print('circle', perc, '%')
+        print('circle', perc, '%', ' margin:', margin)
                 
         if perc >= 80:
             self.shape = coords
@@ -198,7 +204,7 @@ class Shape_detector():
             print('vertical')
             return True
         return False
-
+            
     def get_line_length(self, x, y):
         """
         Calculates the length of a line
@@ -206,5 +212,5 @@ class Shape_detector():
         x_length = max(x) - min(x)
         y_length = max(y) - min(y)
 
-        result = math.sqrt((x_length*x_length)+(y_length*y_length))
+        result = math.sqrt((x_length**2)+(y_length**2))
         return result

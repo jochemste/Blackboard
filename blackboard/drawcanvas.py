@@ -285,8 +285,9 @@ class DrawCanvas(tk.Canvas):
 
         self.lines_list[-1].append(l)
 
-        self.last_coord['x'] = x2
-        self.last_coord['y'] = y2
+        if not(x2 == None or y2 == None):
+            self.last_coord['x'] = x2
+            self.last_coord['y'] = y2
 
     def draw_straight_line(self, event, clr=''):
         l_width = self.line_width
@@ -306,10 +307,9 @@ class DrawCanvas(tk.Canvas):
         if self.draw_style == 'dash':
             dash = (int(10*(l_width/2)), int(10*(l_width/2)))
         elif self.draw_style == 'dot':
-            dash=(1, int(10*(l_width/2)))
+            dash = (1, int(10*(l_width/2)))
         else:
-            dash=()
-
+            dash = ()
 
         l = Line(id_=self.create_line((x1,y1,
                                        x2, y2),
@@ -326,6 +326,7 @@ class DrawCanvas(tk.Canvas):
 
         self.last_coord['x'] = self.x
         self.last_coord['y'] = self.y
+        
 
     def draw_dash(self, event, clr=''):
         l_width = self.line_width
