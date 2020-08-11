@@ -46,6 +46,7 @@ class DrawCanvas(tk.Canvas):
         self.correct = True
         self.scale_widg = False
         self.margin = 30
+        self.movement = 20
 
         self.bind('<Shift-Button-1>', self.draw_straight_line)
         self.bind('<B1-Motion>', self.draw)
@@ -500,16 +501,20 @@ class DrawCanvas(tk.Canvas):
             self.scale("all",0,0,wscale,hscale)
 
     def move_right(self, event):
-        self.move("all", 10, 0)
+        self.move("all", self.movement, 0)
+        self.last_coord['x'] += self.movement
 
     def move_left(self, event):
-        self.move("all", -10, 0)
+        self.move("all", -self.movement, 0)
+        self.last_coord['x'] -= self.movement
 
     def move_up(self, event):
-        self.move("all", 0, -10)
+        self.move("all", 0, -self.movement)
+        self.last_coord['y'] -= self.movement
 
     def move_down(self, event):
-        self.move("all", 0, 10)
+        self.move("all", 0, self.movement)
+        self.last_coord['y'] += self.movement
 
     def clear(self):
         self.cleared_lines = []
