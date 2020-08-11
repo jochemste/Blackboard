@@ -5,9 +5,11 @@ import math
 
 class Shape_detector():
     shape: dict
+    __shapes: dict
 
     def __init__(self):
         self.shape = dict(x=None, y=None)
+        self.__shapes = dict(line=None, triangle=None, circle=None)
 
     def get_shape(self, x, y, margin=20):
         """
@@ -15,20 +17,29 @@ class Shape_detector():
         """
         #relative_margin = margin*len(x)/200
         #relative_margin = margin*math.sqrt(len(x))/10
+        self.percent = dict(line=0, triangle=0, circle=0)
         
         relative_margin = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
-        rel_margin_circ = margin*math.sqrt(len(x))/10
+        rel_margin_circ = margin*math.sqrt(len(x))/5
+        shape = 'unknown'
         if not(len(x) == len(y)):
             print('ERROR: shape coordinate lengths do not match')
-            return 'unknown'
-        elif self.is_line(x=x, y=y, margin=relative_margin):
-            return 'line'
-        elif self.is_triangle(x=x, y=y, margin=relative_margin):
-            return 'triangle'
-        elif self.is_circle(x=x, y=y, margin=relative_margin*2):
-            return 'circle'
-        else:
-            return 'unknown'
+            return shape
+        if self.is_line(x=x, y=y, margin=relative_margin):
+            shape = 'line'
+            self.shape=self.__shapes['line']
+        if self.is_triangle(x=x, y=y, margin=relative_margin):
+            if self.percent['triangle'] > self.percent['line']:
+                shape = 'triangle'
+                self.shape=self.__shapes['triangle']
+        if self.is_circle(x=x, y=y, margin=rel_margin_circ):
+            if (self.percent['circle'] > self.percent['line']) and \
+               (self.percent['circle'] > self.percent['triangle']):
+                shape = 'circle'
+                self.shape=self.__shapes['circle']
+                
+        print(self.percent, shape)
+        return shape
 
     def is_line(self, x, y, margin):
         """
@@ -75,11 +86,12 @@ class Shape_detector():
                 perc += perc_step
 
         #print('line',perc, '%')
-        if perc > 80:
+        self.percent['line']=perc
+        if perc >= 80:
             if x == a:
-                self.shape = dict(x=a, y=b_line)
+                self.__shapes['line'] = dict(x=a, y=b_line)
             else:
-                self.shape = dict(x=b_line, y=a)
+                self.__shapes['line'] = dict(x=b_line, y=a)
             return True
         else:
             #print('margin: ', margin, ' slope: ', slope)
@@ -131,9 +143,10 @@ class Shape_detector():
 
         perc = (perc_x+perc_y) / 2
         print('circle', perc, '%', ' margin:', margin)
-                
+
+        self.percent['circle'] = perc
         if perc >= 80:
-            self.shape = coords
+            self.__shapes['circle'] = coords
             return True
         else:
             return False
@@ -160,8 +173,9 @@ class Shape_detector():
         abc['y'].append(min(y))
 
         perc = (perc_x + perc_y) / 2
+        self.percent['triangle'] = perc
         if perc > 80:
-            self.shape = dict(x=x, y=y_line)
+            self.__shapes['triangle'] = dict(x=x, y=y_line)
             return True
 
         return False

@@ -102,7 +102,10 @@ class DrawPage(tk.Frame):
                              command=self.set_shape_corr_margin,
                              bg='grey', troughcolor='grey',
                              orient=tk.HORIZONTAL,
-                             showvalue=0)
+                             showvalue=0,
+                             label='Sensitivity',
+                             from_=1,
+                             to=100)
         corrScale.pack(side='top', fill='both', padx=5)
         corrScale.set(self.dc.margin)
 
@@ -341,7 +344,6 @@ class DrawPage(tk.Frame):
     def set_shape_corr_margin(self, arg):
         self.dc.margin = int(arg)
         
-                               
     def update_drawcanvas(self):
         newcanvas = self.dc
         self.dc.destroy()
