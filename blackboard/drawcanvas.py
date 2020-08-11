@@ -58,6 +58,10 @@ class DrawCanvas(tk.Canvas):
         self.bind('<ButtonRelease-3>', self.mouse_released)
         self.bind_all('<Control-slash>', self.undo_line_callback)
         self.bind_all('<Control-Key-z>', self.undo_line_callback)
+        self.bind_all('<Left>', self.move_right)
+        self.bind_all('<Right>', self.move_left)
+        self.bind_all('<Up>', self.move_down)
+        self.bind_all('<Down>', self.move_up)
         self.bind('<Key>', self.add_letter)
         self.update()
         self.height =  self.winfo_reqheight()
@@ -92,7 +96,11 @@ class DrawCanvas(tk.Canvas):
             if len(self.lines_list):
                 if len(self.lines_list[-1]) == 1 and self.lines_list[-1][-1].style == 'text':
                     #add letter
-                    text=self.itemcget(self.lines_list[-1][-1].id_, 'text')+event.char
+                    #print(event)
+                    if event.keysym == 'BackSpace':
+                        text=self.itemcget(self.lines_list[-1][-1].id_, 'text')[:-1]
+                    else:
+                        text=self.itemcget(self.lines_list[-1][-1].id_, 'text')+event.char
                     self.itemconfigure(self.lines_list[-1][-1].id_, text=text)
                     self.lines_list[-1][-1].text=text
             
@@ -490,6 +498,18 @@ class DrawCanvas(tk.Canvas):
         if self.scale_widg == True:
             # rescale all the objects tagged with the "all" tag
             self.scale("all",0,0,wscale,hscale)
+
+    def move_right(self, event):
+        self.move("all", 10, 0)
+
+    def move_left(self, event):
+        self.move("all", -10, 0)
+
+    def move_up(self, event):
+        self.move("all", 0, -10)
+
+    def move_down(self, event):
+        self.move("all", 0, 10)
 
     def clear(self):
         self.cleared_lines = []
