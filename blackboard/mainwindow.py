@@ -89,6 +89,18 @@ class DrawPage(tk.Frame):
         self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
 
     def __init_shape_widgets(self, controller):
+        self.scale_drawing = tk.IntVar()
+        scaleCheckButton = tk.Checkbutton(self.shapeCorLabFrame, text='Scale',
+                                         variable=self.scale_drawing,
+                                         onvalue=1, offvalue=0,
+                                         command=self.toggle_scaling,
+                                         bg='grey')
+        scaleCheckButton.pack(side='top', fill='both', padx=5)
+        if self.dc.scale_widg == False:
+            self.scale_drawing.set(0)
+        else:
+            self.scale_drawing.set(1)
+        
         self.shape_correction = tk.IntVar()
         corrCheckButton = tk.Checkbutton(self.shapeCorLabFrame, text='Correct',
                                          variable=self.shape_correction,
@@ -96,7 +108,11 @@ class DrawPage(tk.Frame):
                                          command=self.toggle_shape_correction,
                                          bg='grey')
         corrCheckButton.pack(side='top', fill='both', padx=5)
-        self.shape_correction.set(1)
+
+        if self.dc.correct == True:
+            self.shape_correction.set(1)
+        else:
+            self.shape_correction.set(0)
 
         corrScale = tk.Scale(self.shapeCorLabFrame,
                              command=self.set_shape_corr_margin,
@@ -340,6 +356,12 @@ class DrawPage(tk.Frame):
             self.dc.correct = True
         else:
             self.dc.correct = False
+
+    def toggle_scaling(self):
+        if self.scale_drawing.get() == 1:
+            self.dc.scale_widg = True
+        else:
+            self.dc.scale_widg = False
 
     def set_shape_corr_margin(self, arg):
         self.dc.margin = int(arg)

@@ -26,6 +26,7 @@ class DrawCanvas(tk.Canvas):
     cleared_lines: list
     draw_style: str
     correct: bool
+    scale_widg: bool
 
     def __init__(self, parent, *args, **kwargs):
         if 'bg' in kwargs:
@@ -43,6 +44,7 @@ class DrawCanvas(tk.Canvas):
         self.last_coord = dict(x= None, y= None)
         self.graph_coords = dict(x= None, y= None)
         self.correct = True
+        self.scale_widg = False
         self.margin = 30
 
         self.bind('<Shift-Button-1>', self.draw_straight_line)
@@ -275,6 +277,7 @@ class DrawCanvas(tk.Canvas):
                                           dash=dash),
                      x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
                      style=l_style)
+            self.lines_list[-1].append(l)
         elif not(x1 == None):
             l = Line(id_=self.create_line(x1,y1,
                                           x2, y2,
@@ -286,9 +289,8 @@ class DrawCanvas(tk.Canvas):
                                           dash=dash),
                      x=[x1, x2], y=[y1, y2], clr=clr, width=l_width,
                      style=l_style)
-
-        self.lines_list[-1].append(l)
-
+            self.lines_list[-1].append(l)
+        
         if not(x2 == None or y2 == None):
             self.last_coord['x'] = x2
             self.last_coord['y'] = y2
@@ -455,7 +457,6 @@ class DrawCanvas(tk.Canvas):
         s=Shape_detector()
         x, y=[], []
         for line in self.lines_list[-1]:
-            #if line.style == 'pen' or line.style == 'dot' or line.style == 'dash':
             for x_ in line.x:
                 x.append(x_)
             for y_ in line.y:
@@ -465,7 +466,6 @@ class DrawCanvas(tk.Canvas):
         if shape == 'line' or shape == 'circle' or \
            shape == 'triangle' or shape == 'rectangle':
             coords=[]
-            #x, y=[], []
             x, y=s.shape['x'], s.shape['y']
             for i in range(len(x)):
                 coords.append(x[i])
@@ -479,13 +479,6 @@ class DrawCanvas(tk.Canvas):
                                   clr=line.clr,
                                   width=line.width,
                                   style=line.style)
-            #for i in range(1, len(x)):
-            #    self.draw_line_coords(x1=x[i-1], y1=y[i-1],
-            #                          x2=x[i], y2=y[i],
-            #                          clr=line.clr,
-            #                          width=line.width,
-            #                          style=line.style)
-
     
     def on_resize(self, event):
         wscale = float(event.width)/self.width
@@ -494,8 +487,9 @@ class DrawCanvas(tk.Canvas):
         
         # resize the canvas 
         self.config(width=self.width, height=self.height)
-        # rescale all the objects tagged with the "all" tag
-        #self.scale("all",0,0,wscale,hscale)
+        if self.scale_widg == True:
+            # rescale all the objects tagged with the "all" tag
+            self.scale("all",0,0,wscale,hscale)
 
     def clear(self):
         self.cleared_lines = []
