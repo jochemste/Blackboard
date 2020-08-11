@@ -51,19 +51,26 @@ class DrawPage(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent, bg='grey')
+        
         self.x = None
         self.y = None
+
         self.config(cursor='pencil')
 
+        # Initialise the options frame label
         self.frameBut = tk.LabelFrame(self, text='Options', bg='grey')
         self.frameBut.config(cursor='hand1')
         self.frameBut.pack(side='left', fill='both')
+
+        # Initialise the label frames for the separate menus inside the invisible options frame
         self.clrLabFrame = tk.LabelFrame(self.frameBut, text='Colours', bg='grey')
         self.clrLabFrame.pack(side='top', fill='both', padx=5)
         self.sizeLabFrame = tk.LabelFrame(self.frameBut, text='Size', bg='grey')
         self.sizeLabFrame.pack(side='top', fill='both', padx=5)
         self.styleLabFrame = tk.LabelFrame(self.frameBut, text='Style', bg='grey')
         self.styleLabFrame.pack(side='top', fill='both', padx=5)
+        self.shapeCorLabFrame = tk.LabelFrame(self.frameBut, text='Shapes', bg='grey')
+        self.shapeCorLabFrame.pack(side='top', fill='both', padx=5)
         self.menuLabFrame = tk.LabelFrame(self.frameBut, text='Menu', bg='grey')
         self.menuLabFrame.pack(side='top', fill='both', padx=5)
         
@@ -71,6 +78,7 @@ class DrawPage(tk.Frame):
 
         self.__init_buttons(controller)
         self.__init_drawcanvas()
+        self.__init_shape_widgets(controller)
         
         
     def __init_drawcanvas(self):
@@ -79,6 +87,24 @@ class DrawPage(tk.Frame):
         self.bind('<Configure>', self.dc.on_resize)
         self.bind_all('<Button-4>', lambda e : self.__change_size(incr=1))
         self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
+
+    def __init_shape_widgets(self, controller):
+        self.shape_correction = tk.IntVar()
+        corrCheckButton = tk.Checkbutton(self.shapeCorLabFrame, text='Correct',
+                                         variable=self.shape_correction,
+                                         onvalue=1, offvalue=0,
+                                         command=self.toggle_shape_correction,
+                                         bg='grey')
+        corrCheckButton.pack(side='top', fill='both', padx=5)
+        self.shape_correction.set(1)
+
+        corrScale = tk.Scale(self.shapeCorLabFrame,
+                             command=self.set_shape_corr_margin,
+                             bg='grey', troughcolor='grey',
+                             orient=tk.HORIZONTAL,
+                             showvalue=0)
+        corrScale.pack(side='top', fill='both', padx=5)
+        corrScale.set(self.dc.margin)
 
     def __init_style_buttons(self, controller):
         self.style_buttons = []
@@ -304,6 +330,16 @@ class DrawPage(tk.Frame):
                                  new_rgb=[0, 0, 0], alpha=255)
             #image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
         os.remove(temp_file)
+
+
+    def toggle_shape_correction(self):
+        if self.shape_correction.get() == 1:
+            self.dc.correct = True
+        else:
+            self.dc.correct = False
+
+    def set_shape_corr_margin(self, arg):
+        self.dc.margin = int(arg)
         
                                
     def update_drawcanvas(self):

@@ -9,7 +9,10 @@ from PIL import ImageTk, Image
 
 class DrawCanvas(tk.Canvas):
     """
-    A custom Canvas to draw on
+    A custom tk.Canvas class to allow for drawing
+
+    Allows drawing and is capable of correcting shapes and having different 
+    drawing styles and line widths.
     """
     x: int
     y: int
@@ -40,6 +43,7 @@ class DrawCanvas(tk.Canvas):
         self.last_coord = dict(x= None, y= None)
         self.graph_coords = dict(x= None, y= None)
         self.correct = True
+        self.margin = 30
 
         self.bind('<Shift-Button-1>', self.draw_straight_line)
         self.bind('<B1-Motion>', self.draw)
@@ -456,7 +460,7 @@ class DrawCanvas(tk.Canvas):
                 x.append(x_)
             for y_ in line.y:
                 y.append(y_)
-        shape = s.get_shape(x=x, y=y, margin=30)
+        shape = s.get_shape(x=x, y=y, margin=self.margin)
 
         if shape == 'line' or shape == 'circle' or \
            shape == 'triangle' or shape == 'rectangle':
