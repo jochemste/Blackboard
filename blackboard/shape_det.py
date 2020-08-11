@@ -13,7 +13,22 @@ class Shape_detector():
 
     def get_shape(self, x, y, margin=20):
         """
-        Returns the shape name
+        Returns the shape name and sets a relative margin
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        y: list
+            The list of y coordinates
+        margin: int
+            The margin to be used for relative margin calculations
+        
+        Returns
+        -------
+        shape: str
+            The name of the shape if detected. 
+            If not a known shape, 'unknown' will be returned.
         """
         #relative_margin = margin*len(x)/200
         #relative_margin = margin*math.sqrt(len(x))/10
@@ -44,7 +59,23 @@ class Shape_detector():
     def is_line(self, x, y, margin):
         """
         Check if the given coordinates form a 
-        linear shape within the given margin
+        linear shape within the given margin. If a linear shape is found, the corrected 
+        shape is stored.
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        y: list
+            The list of y coordinates
+        margin: int
+            The margin to be used to allow shapes to deviate from a perfect form within 
+            this margin. The margin is depicted in pixels, like the coordinates.
+        
+        Returns
+        -------
+        .boolean
+            Returns if the coordinates form a line or not.
         """
         # y = a*x+b
         perc_step = 100/len(x)
@@ -103,7 +134,23 @@ class Shape_detector():
     def is_circle(self, x, y, margin):
         """
         Check if the given coordinates form a 
-        circular shape within the given margin
+        circular shape within the given margin. If a circular shape is found, the corrected 
+        shape is stored.
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        y: list
+            The list of y coordinates
+        margin: int
+            The margin to be used to allow shapes to deviate from a perfect form within 
+            this margin. The margin is depicted in pixels, like the coordinates.
+        
+        Returns
+        -------
+        .boolean
+            Returns if the coordinates form a circle or not.
         """
         if len(x) < 10:
             return False
@@ -154,7 +201,23 @@ class Shape_detector():
     def is_triangle(self, x, y, margin):
         """
         Check if the given coordinates form a 
-        triangular shape within the given margin
+        triangular shape within the given margin. If a triangular shape is found, the corrected 
+        shape is stored.
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        y: list
+            The list of y coordinates
+        margin: int
+            The margin to be used to allow shapes to deviate from a perfect form within 
+            this margin. The margin is depicted in pixels, like the coordinates.
+        
+        Returns
+        -------
+        .boolean
+            Returns if the coordinates form a triangle or not.
         """
         #2a/Pi arcsin(sin(2Pi/p * x))
         perc_x, perc_y = 0, 0
@@ -182,7 +245,17 @@ class Shape_detector():
 
     def line_descends(self, y):
         """
-        Check if line is sloping down or not
+        Check if line is sloping down or not.
+        
+        Parameters
+        ----------
+        y: list
+            The list of y coordinates
+        
+        Returns
+        -------
+        .boolean
+            Returns True if the line descends and False otherwise.
         """
         if y[0] < y[-1]:
             return True
@@ -191,6 +264,16 @@ class Shape_detector():
     def line_reversed(self, x):
         """
         Check if line starts at a larger X than where it ends
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        
+        Returns
+        -------
+        .boolean
+            Returns True if the line is reversed and False otherwise.
         """
         if x[-1] > x[0]:
             return True
@@ -199,6 +282,16 @@ class Shape_detector():
     def line_horiz(self, y):
         """
         Check if line is horizontal
+        
+        Parameters
+        ----------
+        y: list
+            The list of y coordinates
+        
+        Returns
+        -------
+        .boolean
+            Returns True if the line is horizontal and False otherwise.
         """
         if y[0] == y[-1]:
             return True
@@ -207,6 +300,16 @@ class Shape_detector():
     def line_vert(self, x):
         """
         Check if line is vertical or not
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        
+        Returns
+        -------
+        .boolean
+            Returns True if the line is vertical and False otherwise.
         """
         vals=[]
         for val in x:
@@ -222,6 +325,18 @@ class Shape_detector():
     def get_line_length(self, x, y):
         """
         Calculates the length of a line
+        
+        Parameters
+        ----------
+        x: list
+            The list of x coordinates
+        y: list
+            The list of y coordinates
+        
+        Returns
+        -------
+        result: str
+            The length of the line.
         """
         x_length = max(x) - min(x)
         y_length = max(y) - min(y)

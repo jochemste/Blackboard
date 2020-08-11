@@ -12,6 +12,16 @@ from PIL import ImageTk, Image
 class MainWindow(tk.Tk):
 
     def __init__(self, *args, **kwargs):
+        """
+        Class constructor
+        
+        Parameters
+        ----------
+        *args:
+            pass
+        **kwargs:
+            pass
+        """
         super().__init__(*args, **kwargs)
         self.__init_frames()
         self.bind('<Key-Escape>', self.exit_window)
@@ -19,9 +29,20 @@ class MainWindow(tk.Tk):
         self.geometry('800x800')
 
     def show_frame(self, name):
+        """
+        Shows the frame with the given name.
+        
+        Parameters
+        ----------
+        name: str
+            The name of the frame
+        """
         self.frames[name].tkraise()
 
     def __init_frames(self):
+        """
+        Initialises the frames
+        """
         container = ttk.Frame(self)
         container.pack(side='top', fill='both', expand=True)
         container.grid_rowconfigure(0, weight=1) # make the cell in grid cover the entire window
@@ -36,12 +57,22 @@ class MainWindow(tk.Tk):
         self.show_frame(DrawPage)
 
     def exit_window(self, event):
+        """
+        Event handler to exit the window. 
+        Destroys the window when the Escape key is used.
+        
+        Parameters
+        ----------
+        event:
+            The event to handle
+        """
         if event.keysym == 'Escape':
             self.destroy()
     
 class DrawPage(tk.Frame):
     """
-    A page, dedicated to drawing on a DrawCanvas
+    A page/frame, dedicated to drawing on a DrawCanvas and 
+    changing the DrawCanvas settings.
     """
     x: int
     y: int
@@ -50,6 +81,18 @@ class DrawPage(tk.Frame):
     frameBut: tk.Frame
 
     def __init__(self, parent, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         super().__init__(parent, bg='grey')
         
         self.x = None
@@ -82,6 +125,18 @@ class DrawPage(tk.Frame):
         
         
     def __init_drawcanvas(self):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.dc = DrawCanvas(parent=self, test='true')
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
@@ -89,6 +144,18 @@ class DrawPage(tk.Frame):
         self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
 
     def __init_shape_widgets(self, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.scale_drawing = tk.IntVar()
         scaleCheckButton = tk.Checkbutton(self.shapeCorLabFrame, text='Scale',
                                          variable=self.scale_drawing,
@@ -126,6 +193,18 @@ class DrawPage(tk.Frame):
         corrScale.set(self.dc.margin)
 
     def __init_style_buttons(self, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.style_buttons = []
         frameCol1 = tk.Frame(self.styleLabFrame, bg='grey')
         frameCol2 = tk.Frame(self.styleLabFrame, bg='grey')
@@ -169,6 +248,18 @@ class DrawPage(tk.Frame):
         create_tooltip(buttonSquare, "Set style to rectangular drawing")
 
     def __init_clr_buttons(self, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.clr_buttons = []
         frameCol1 = tk.Frame(self.clrLabFrame, bg='grey')
         frameCol2 = tk.Frame(self.clrLabFrame, bg='grey')
@@ -243,6 +334,18 @@ class DrawPage(tk.Frame):
         self.__init_clr_label(clr='lightgrey')
 
     def __init_size_buttons(self, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         buttonPlus = tk.Button(self.sizeLabFrame, text='+',
                                 command=lambda : self.__change_size(incr=1),
                                 bg='grey')
@@ -264,6 +367,18 @@ class DrawPage(tk.Frame):
         self.__init_size_label(size=2)
         
     def __init_menu_buttons(self, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
                                command=lambda : {self.dc.undo_line()},
                                bg='grey')
@@ -289,24 +404,72 @@ class DrawPage(tk.Frame):
 
         
     def __init_buttons(self, controller):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.__init_clr_buttons(controller)
         self.__init_size_buttons(controller)
         self.__init_style_buttons(controller)
         self.__init_menu_buttons(controller)
 
     def __init_size_label(self, size):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.size_label = tk.Label(self.sizeLabFrame, text=str(size)+'px',
                                    bg='grey')
         self.size_label.pack(side='top', fill='both', padx=10)
         create_tooltip(self.size_label, "Current size")
 
     def __init_clr_label(self, clr):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.clr_label = tk.Label(self.clrLabFrame, bg=str(clr))
         self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
         self.clr_label.config(width=4)
         create_tooltip(self.clr_label, "Current colour")
 
     def __change_size(self, size=None, incr=None, decr=None):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.dc.set_line_width(size=size, incr=incr, decr=decr)
         self.size_label.destroy()
         self.size_label = tk.Label(self.sizeLabFrame, text=str(self.dc.line_width)+'px',
@@ -315,6 +478,18 @@ class DrawPage(tk.Frame):
         create_tooltip(self.size_label, "Current size")
         
     def change_clr(self, button, clr):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.dc.set_colour(colour=clr)
         self.clr_label.destroy()
         self.clr_label = tk.Label(self.clrLabFrame, bg=self.dc.line_clr)
@@ -326,6 +501,18 @@ class DrawPage(tk.Frame):
         button['state'] = tk.DISABLED
         
     def select_clr(self):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         clr = askcolor(color=self.dc.line_clr)[1]
         if not(clr == None):
             self.dc.set_colour(colour=clr)
@@ -335,6 +522,18 @@ class DrawPage(tk.Frame):
         self.clr_label.config(width=4)
         
     def save_figure(self):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         temp_file='temp.eps'
         self.dc.postscript(file=temp_file)
         img = Image.open(temp_file)
@@ -352,21 +551,69 @@ class DrawPage(tk.Frame):
 
 
     def toggle_shape_correction(self):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         if self.shape_correction.get() == 1:
             self.dc.correct = True
         else:
             self.dc.correct = False
 
     def toggle_scaling(self):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         if self.scale_drawing.get() == 1:
             self.dc.scale_widg = True
         else:
             self.dc.scale_widg = False
 
     def set_shape_corr_margin(self, arg):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         self.dc.margin = int(arg)
         
     def update_drawcanvas(self):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
         newcanvas = self.dc
         self.dc.destroy()
         self.dc = newcanvas
@@ -378,6 +625,9 @@ class AdvSelPage(ttk.Frame):
     """
 
     def __init__(self, parent, controller):
+        """
+        Class constructor
+        """
         super().__init__(parent)
 
 if __name__ == '__main__':
