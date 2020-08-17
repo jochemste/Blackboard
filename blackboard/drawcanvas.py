@@ -679,16 +679,11 @@ class DrawCanvas(tk.Canvas):
 
     def reset_colour(self):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Resets the colour for drawings
         
         Parameters
         ----------
         None
-        
-        Returns
-        -------
-        network: str
-            The network ip
         """
         temp_clr = self.line_clr
         self.line_clr = self.prev_line_colour
@@ -696,16 +691,12 @@ class DrawCanvas(tk.Canvas):
         
     def mouse_released(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Handler to activate when the mouse button 1 is released
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to be handled
         """
         self.last_coord['x'] = self.x
         self.last_coord['y'] = self.y
@@ -719,16 +710,11 @@ class DrawCanvas(tk.Canvas):
 
     def shape_correct(self):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Corrects the last drawn shape
         
         Parameters
         ----------
         None
-        
-        Returns
-        -------
-        network: str
-            The network ip
         """
         s=Shape_detector()
         x, y=[], []
@@ -761,16 +747,13 @@ class DrawCanvas(tk.Canvas):
     
     def on_resize(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Handler to scale the canvas (and widgets if enabled) when the 
+        parent widget is configured.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to be processed for configurational data
         """
         wscale = float(event.width)/self.width
         hscale = float(event.height)/self.height
@@ -784,16 +767,17 @@ class DrawCanvas(tk.Canvas):
 
     def zoom(self, event, direction="+"):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Allows zooming of the widgets of the canvas. Does not update the 
+        last known coordinates yet.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to be processed for positional data.
+
+        direction:
+            The direction to zoom. 'in' or '+' will result into zooming into the canvas.
+            'out' or '-' will result into zooming out of the canvas.
         """
         if direction == "in" or direction == "+":
             self.scale("all", event.x, event.y, 1.1, 1.1)
@@ -802,80 +786,59 @@ class DrawCanvas(tk.Canvas):
 
     def move_right(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Move all the widgets to the right.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            Nothing is done with the event at this stage.
         """
         self.move("all", self.movement, 0)
         self.last_coord['x'] += self.movement
 
     def move_left(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Move all the widgets to the left.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            Nothing is done with the event at this stage.
         """
         self.move("all", -self.movement, 0)
         self.last_coord['x'] -= self.movement
 
     def move_up(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Move all the widgets up.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            Nothing is done with the event at this stage.
         """
         self.move("all", 0, -self.movement)
         self.last_coord['y'] -= self.movement
 
     def move_down(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Move all the widgets down.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            Nothing is done with the event at this stage.
         """
         self.move("all", 0, self.movement)
         self.last_coord['y'] += self.movement
 
     def clear(self):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Clears all widgets on the canvas and stores them until the next clear.
         
         Parameters
         ----------
         None
-        
-        Returns
-        -------
-        network: str
-            The network ip
         """
         self.cleared_lines = []
 
@@ -887,16 +850,11 @@ class DrawCanvas(tk.Canvas):
 
     def undo_clear(self):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Undoes the last clear.
         
         Parameters
         ----------
         None
-        
-        Returns
-        -------
-        network: str
-            The network ip
         """
         for line in self.cleared_lines:
             if line.style=='pen' or line.style=='dash' or line.style=='dot':
