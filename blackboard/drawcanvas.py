@@ -30,16 +30,16 @@ class DrawCanvas(tk.Canvas):
 
     def __init__(self, parent, *args, **kwargs):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Initialise the variables, bindings and other important aspects of the canvas
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        Parent:
+            The parent widget
+        *args:
+            Optional and positional arguments
+        **kwargs:
+            Optional and specified arguments
         """
         if 'bg' in kwargs:
             bg = kwargs['bg']
@@ -58,6 +58,9 @@ class DrawCanvas(tk.Canvas):
         self.correct = True
         self.scale_widg = False
         self.margin = 30
+        self.margin_line = self.margin
+        self.margin_circle = self.margin
+        self.margin_triangle = self.margin
         self.movement = 20
 
         self.bind('<Shift-Button-1>', self.draw_straight_line)
@@ -69,6 +72,12 @@ class DrawCanvas(tk.Canvas):
         self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr=None)})
         self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_clr)})
         self.bind('<ButtonRelease-3>', self.mouse_released)
+        self.bind('<Control-Button-4>', lambda e : self.zoom(event=e, direction="+"))
+        self.bind('<Control-Button-5>', lambda e : self.zoom(event=e, direction="-"))
+        self.bind('<Shift-Button-4>', self.move_right)
+        self.bind('<Shift-Button-5>', self.move_left)
+        self.bind('<Button-4>', self.move_down)
+        self.bind('<Button-5>', self.move_up)
         self.bind_all('<Control-slash>', self.undo_line_callback)
         self.bind_all('<Control-Key-z>', self.undo_line_callback)
         self.bind_all('<Left>', self.move_right)
@@ -85,16 +94,14 @@ class DrawCanvas(tk.Canvas):
 
     def process_args(self, *args, **kwargs):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Processes the optional arguments.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        *args:
+            Optional and positional arguments
+        **kwargs:
+            Optional and specified arguments
         """
         if 'correct' in kwargs:
             self.correct = kwargs['correct']
@@ -106,16 +113,12 @@ class DrawCanvas(tk.Canvas):
 
     def draw(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Processes a drawing event
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to process.
         """
         if self.draw_style == 'text':
             self.set_text_pos(event)
@@ -130,16 +133,12 @@ class DrawCanvas(tk.Canvas):
 
     def add_letter(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Adds a letter to a text widget on the canvas.
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to process and take the charactar/symbol out of.
         """
         if self.draw_style == 'text':
             if len(self.lines_list):
@@ -156,16 +155,12 @@ class DrawCanvas(tk.Canvas):
 
     def set_text_pos(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Sets the position of a text widget on the canvas
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to process and retrieve the positional information out of.
         """
         if self.x == None:
             self.x=event.x-(self.line_width/2)-2
@@ -187,16 +182,12 @@ class DrawCanvas(tk.Canvas):
         
     def draw_graph(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draws a graph on the canvas
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to process for positional data
         """
         self.lines_list.append([])
 
@@ -223,16 +214,18 @@ class DrawCanvas(tk.Canvas):
 
     def draw_graph_coords(self, x, y, clr='', width=None):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draws a graph on the canvas, using coordinates and line information
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        x:
+            The x coordinates of the line
+        y:
+            The y coordinates of the line
+        clr:
+            The colour of the line
+        width:
+            The width of the line
         """
         self.lines_list.append([])
 
@@ -266,12 +259,14 @@ class DrawCanvas(tk.Canvas):
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        x:
+            The x coordinates of the text
+        y:
+            The y coordinates of the text
+        clr:
+            The colour of the text
+        font:
+            The font of the text
         """
         self.lines_list.append([])
 
@@ -296,16 +291,11 @@ class DrawCanvas(tk.Canvas):
             
     def draw_text(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draw text on the canvas
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        The event to be processed for positional data
         """
         if self.x == None:
             self.x=event.x-(self.line_width/2)-2
@@ -317,27 +307,30 @@ class DrawCanvas(tk.Canvas):
         self.lines_list[-1].append(Text(id_=self.create_text(event.x, event.y,
                                                              fill=self.line_clr,
                                                              font=("tahoma", "12", "normal"),
-                                                             text="Click the bubbles that are multiples of two."),x=[self.x], y=[self.y], clr=self.line_clr, style='text', width=self.line_width,
-                                        text="Click the bubbles that are multiples of two.", font=("tahoma", "12", "normal")))
+                                                             text="Click the bubbles that are multiples of two."),
+                                        x=[self.x],
+                                        y=[self.y],
+                                        clr=self.line_clr,
+                                        style='text',
+                                        width=self.line_width,
+                                        text="Click the bubbles that are multiples of two.",
+                                        font=("tahoma", "12", "normal")))
         
     def draw_line(self, event, clr='', style=None):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draw a line on the canvas with specified colour and style
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to be processed for positional data
         """
         l_width = self.line_width
         if clr == '':
            clr = self.line_clr
         if clr == None:
-            l_width = self.line_width*20
+            pass
+            #l_width = self.line_width*20
         if style == None:
             l_style=self.draw_style
         else:
@@ -377,16 +370,34 @@ class DrawCanvas(tk.Canvas):
     def draw_line_coords(self, x1=None, y1=None, x2=None, y2=None,
                          coords=None, clr='', width=None, style=None):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draws lines on the canvas based on the given coordinates
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        x1:
+            The start x coordinate
+
+        y1:
+            The start y coordinate
+
+        x2:
+            The end x coordinate
+
+        y2:
+            The end y coordinate
+
+        coords:
+            A prepared set of coordinates in the format as needed by the canvas. 
+            This also allows a number of lines to be drawn.
+
+        clr:
+            The colour of the line(s)
+
+        width:
+            The width of the line(s)
+
+        style:
+            The style of the line(s)
         """
         if width ==  None:
             l_width = self.line_width
@@ -438,22 +449,22 @@ class DrawCanvas(tk.Canvas):
 
     def draw_straight_line(self, event, clr=''):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draws a straight line
         
         Parameters
         ----------
-        None
+        event:
+            The event to be processed for positional data
         
-        Returns
-        -------
-        network: str
-            The network ip
+        clr:
+            The colour of the line
         """
         l_width = self.line_width
         if clr == '':
            clr = self.line_clr
         if clr == None:
-            l_width = self.line_width*20
+            pass
+            #l_width = self.line_width*20
 
         self.lines_list.append([])
 
@@ -489,22 +500,22 @@ class DrawCanvas(tk.Canvas):
 
     def draw_dash(self, event, clr=''):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draw a dashed line
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        event:
+            The event to be processed for positional data
+
+        clr:
+            The colour of the line
         """
         l_width = self.line_width
         if clr == '':
            clr = self.line_clr
         if clr == None:
-            l_width = self.line_width*20
+            pass
+            #l_width = self.line_width*20
 
         if self.x == None:
             self.x=event.x-(self.line_width/2)-2
@@ -533,22 +544,22 @@ class DrawCanvas(tk.Canvas):
 
     def draw_dot(self, event, clr=''):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Draws a dotted line
         
         Parameters
         ----------
-        None
+        event:
+            The event to be processed for positional data
         
-        Returns
-        -------
-        network: str
-            The network ip
+        clr:
+            The colour of the line
         """
         l_width = self.line_width
         if clr == '':
            clr = self.line_clr
         if clr == None:
-            l_width = self.line_width*20
+            pass
+            #l_width = self.line_width*20
 
         if self.x == None:
             self.x=event.x-(self.line_width/2)-2
@@ -577,16 +588,11 @@ class DrawCanvas(tk.Canvas):
     
     def undo_line(self):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Undoes the last drawn line or redraws all cleared lines
         
         Parameters
         ----------
         None
-        
-        Returns
-        -------
-        network: str
-            The network ip
         """
         if len(self.lines_list) >= 1:
             for line in self.lines_list[-1]:
@@ -601,11 +607,13 @@ class DrawCanvas(tk.Canvas):
         
     def undo_line_callback(self, event):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Undoes the last drawn line or redraws all cleared lines. 
+        Meant to be used in bindings with keys on the keyboard.
         
         Parameters
         ----------
-        None
+        event:
+            The event to be processed
         
         Returns
         -------
@@ -620,47 +628,42 @@ class DrawCanvas(tk.Canvas):
 
     def set_draw_style(self, style: str):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Sets the style for drawing to the specified one
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        style:
+            The style to be used
         """
         self.draw_style = style
                 
     def set_colour(self, colour):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Sets the colour of the drawings
         
         Parameters
         ----------
-        None
-        
-        Returns
-        -------
-        network: str
-            The network ip
+        colour:
+            The colour to be used for new drawings on the canvas
         """
         self.prev_line_colour = self.line_clr
         self.line_clr = colour
 
     def set_line_width(self, size=None, incr=None, decr=None):
         """
-        Gets the network ip, omitting the part after the last '.'
+        Sets the line width or increments/decrements it. Throws a ValueError if 
+        all arguments are left empty. The minimum width is 1 and the maximum is 99
         
         Parameters
         ----------
-        None
+        size:
+            The absolute value to be used for the line width
         
-        Returns
-        -------
-        network: str
-            The network ip
+        incr:
+            The value to increment the current width with.
+
+        decr:
+            The value to decrement the current width with.
         """
         if not(size == None):
             self.line_width = size
@@ -669,9 +672,9 @@ class DrawCanvas(tk.Canvas):
         elif not(decr == None):
             self.line_width -= decr
         else:
-            raise ValueError('Unknown error occurred')
+            raise ValueError('None of the arguments have been given a value')
 
-        if self.line_width > 200: self.line_width = 200
+        if self.line_width > 99: self.line_width = 99
         elif self.line_width < 1: self.line_width = 1
 
     def reset_colour(self):
@@ -734,7 +737,10 @@ class DrawCanvas(tk.Canvas):
                 x.append(x_)
             for y_ in line.y:
                 y.append(y_)
-        shape = s.get_shape(x=x, y=y, margin=self.margin)
+        shape = s.get_shape(x=x, y=y, margin=self.margin,
+                            margin_line=self.margin_line,
+                            margin_circle=self.margin_circle,
+                            margin_triangle=self.margin_triangle)
 
         if shape == 'line' or shape == 'circle' or \
            shape == 'triangle' or shape == 'rectangle':
@@ -775,6 +781,24 @@ class DrawCanvas(tk.Canvas):
         if self.scale_widg == True:
             # rescale all the objects tagged with the "all" tag
             self.scale("all",0,0,wscale,hscale)
+
+    def zoom(self, event, direction="+"):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        if direction == "in" or direction == "+":
+            self.scale("all", event.x, event.y, 1.1, 1.1)
+        elif direction == "out" or direction == "-":
+            self.scale("all", event.x, event.y, 0.9, 0.9)
 
     def move_right(self, event):
         """

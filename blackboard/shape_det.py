@@ -6,12 +6,24 @@ import math
 class Shape_detector():
     shape: dict
     __shapes: dict
+    __detect_shapes: list
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        self.supported_shps = ['line', '', 'circle']
         self.shape = dict(x=None, y=None)
         self.__shapes = dict(line=None, triangle=None, circle=None)
 
-    def get_shape(self, x, y, margin=20):
+        if 'detect' in kwargs:
+            self.__detect_shapes = kwargs['detect']
+        else:
+            self.__detect_shapes = self.supported_shps
+
+        for shape in self.__detect_shapes:
+            if not(shape in self.supported_shps):
+                ValueError("Shape not supported: "+str(shape))
+
+    def get_shape(self, x, y, margin=20, margin_line=None, margin_circle=None,
+                  margin_triangle=None):
         """
         Returns the shape name and sets a relative margin
         
@@ -33,21 +45,42 @@ class Shape_detector():
         #relative_margin = margin*len(x)/200
         #relative_margin = margin*math.sqrt(len(x))/10
         self.percent = dict(line=0, triangle=0, circle=0)
+
+        if not(margin_line == None):
+            margin_line = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
+        else:
+            margin_line = margin_line*math.sqrt(self.get_line_length(x=x, y=y))/10
+
+        if not(margin_triangle == None):
+            margin_triangle = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
+        else:
+            margin_triangle = margin_triangle*math.sqrt(self.get_line_length(x=x, y=y))/10
+
+        if not(margin_circle == None):
+            margin_circle = margin+margin*math.sqrt(len(x))/5
+        else:
+            margin_circle = margin_circle+margin_circle*math.sqrt(len(x))/5
         
-        relative_margin = margin*math.sqrt(self.get_line_length(x=x, y=y))/10
-        rel_margin_circ = margin*math.sqrt(len(x))/5
+        
+        print(margin_line, margin_triangle, margin_circle)
         shape = 'unknown'
         if not(len(x) == len(y)):
             print('ERROR: shape coordinate lengths do not match')
             return shape
-        if self.is_line(x=x, y=y, margin=relative_margin):
+        
+        if ('line' in self.__detect_shapes) and \
+           self.is_line(x=x, y=y, margin=margin_line):
             shape = 'line'
             self.shape=self.__shapes['line']
-        if self.is_triangle(x=x, y=y, margin=relative_margin):
+
+        if ('triangle' in self.__detect_shapes) and \
+           self.is_triangle(x=x, y=y, margin=margin_triangle):
             if self.percent['triangle'] > self.percent['line']:
                 shape = 'triangle'
                 self.shape=self.__shapes['triangle']
-        if self.is_circle(x=x, y=y, margin=rel_margin_circ):
+
+        if ('circle' in self.__detect_shapes) and \
+           self.is_circle(x=x, y=y, margin=margin_circle):
             if (self.percent['circle'] > self.percent['line']) and \
                (self.percent['circle'] > self.percent['triangle']):
                 shape = 'circle'
@@ -85,7 +118,7 @@ class Shape_detector():
 
         # invert x and y coordinates for vertical lines
         if self.line_vert(x):
-            print('repeat process but process x instead of y')
+            #print('repeat process but process x instead of y')
             a, b = y, x
 
         # check for zero division in slope calculations
@@ -189,7 +222,7 @@ class Shape_detector():
         orig_new['y'] = ((max(coords['y'])-min(coords['y']))/2)+min(coords['y'])
 
         perc = (perc_x+perc_y) / 2
-        print('circle', perc, '%', ' margin:', margin)
+        #print('circle', perc, '%', ' margin:', margin)
 
         self.percent['circle'] = perc
         if perc >= 80:
@@ -220,25 +253,164 @@ class Shape_detector():
             Returns if the coordinates form a triangle or not.
         """
         #2a/Pi arcsin(sin(2Pi/p * x))
-        perc_x, perc_y = 0, 0
+        perc = 0
         perc_step = 100/len(x)
 
-        orig = dict(x=x[0], y=y[0])
+        print(y[0], y[-1])
+        angle_a_coord = dict(x=None, y=min(y))
+        angle_b_coord = dict(x=min(x), y=max(y))
+        angle_c_coord = dict(x=max(x), y=max(y))
 
-        abc = dict(x=[], y=[])
-        abc['x'].append(min(x))
-        abc['y'].append(max(y))
-        
-        abc['x'].append(max(x))
-        abc['y'].append(max(y))
-        
-        abc['x'].append(abs(max(x)-min(x))+min(x))
-        abc['y'].append(min(y))
+        for i in range(len(x)):
+            if y[i]==min(y):
+                angle_a_coord['x'] = x[i]
+                break
 
-        perc = (perc_x + perc_y) / 2
+        print('a: ', angle_a_coord)
+        print('b: ', angle_b_coord)
+        print('c: ', angle_c_coord)
+
+        line_ab_og = dict(x=[], y=[])
+        line_bc_og = dict(x=[], y=[])
+        line_ca_og = dict(x=[], y=[])
+
+        line_ab_new = dict(x=[], y=[])
+        line_bc_new = dict(x=[], y=[])
+        line_ca_new = dict(x=[], y=[])
+
+        ############################FAULTY#########################################
+        # Find the first of the original lines
+        index=0
+        for i in range(len(x)):
+            line_ab_og['x'].append(x[i])
+            line_ab_og['y'].append(y[i])
+            if x[i] == angle_b_coord['x'] and \
+               y[i] == angle_b_coord['y']:
+                index=i
+                break
+
+        # Find the second of the original lines
+        while not(x[index] == angle_c_coord['x'] and \
+                  y[index] == angle_c_coord['y']):
+            line_bc_og['x'].append(x[index])
+            line_bc_og['y'].append(y[index])
+            index += 1
+
+        print(index, len(index))
+        # Find the third of the original lines
+        while not(x[index] == angle_a_coord['x'] and \
+                  y[index] == angle_a_coord['y']):
+            line_ca_og['x'].append(x[index])
+            line_ca_og['y'].append(y[index])
+            index += 1
+        ########################################################################
+
+        # slope for line ab
+        try:
+            slope_ab = abs(line_ab_og['x'][-1]-line_ab_og['x'][0])/ \
+                abs(line_ab_og['y'][-1]-line_ab_og['y'][0])
+        except ZeroDivisionError:
+            slope_ab=0
+            print('Zero division error occurred x[-1]=', line_ab_og['x'][-1],
+                  'x[0]=', line_ab_og['x'][0])
+
+        # slope for line bc
+        try:
+            slope_bc = abs(line_bc_og['x'][-1]-line_bc_og['x'][0])/ \
+                abs(line_bc_og['y'][-1]-line_bc_og['y'][0])
+        except ZeroDivisionError:
+            slope_ab=0
+            print('Zero division error occurred x[-1]=', line_bc_og['x'][-1],
+                  'x[0]=', line_bc_og['x'][0])
+
+        # slope for line ca
+        try:
+            slope_ca = abs(line_ca_og['x'][-1]-line_ca_og['x'][0])/ \
+                abs(line_ca_og['y'][-1]-line_ca_og['y'][0])
+        except ZeroDivisionError:
+            slope_ab=0
+            print('Zero division error occurred x[-1]=', line_ca_og['x'][-1],
+                  'x[0]=', line_ca_og['x'][0])
+
+        # calculate and check line ab
+        if self.line_descends(line_ab_og['y']):
+            slope_ab *= -1
+        if self.line_reversed(line_ab_og['x']):
+            slope_ab *= -1
+
+        offset_ab=line_ab_og['y'][0]
+
+        if slope == 0:
+            step_ab = abs(max(line_ab_og['y'])-min(line_ab_og['y']))/len(line_ab_og['y'])
+            for i in range(len(line_ab_og['y'])):
+                line_ab_new['y'].append(min(line_ab_og['y'])+(i*step_ab))
+                line_ab_new['x'].append(line_ab_og['x'])
+        else:
+            for x in line_ab_new['x']:
+                line_ab_new['x'].append(x)
+                line_ab_new['y'].append(slope_ab*(x-line_ab_og['x'][0])+offset_ab)
+
+        for i in range(len(line_ab_og['x'])):
+            if abs(line_ab_new['y'][i]-line_ab_og['y'][i]) <= margin:
+                perc += perc_step
+
+        # calculate and check line bc
+        if self.line_descends(line_bc_og['y']):
+            slope_bc *= -1
+        if self.line_reversed(line_bc_og['x']):
+            slope_bc *= -1
+
+        offset_bc=line_bc_og['y'][0]
+
+        if slope == 0:
+            step_bc = abs(max(line_bc_og['y'])-min(line_bc_og['y']))/len(line_bc_og['y'])
+            for i in range(len(line_bc_og['y'])):
+                line_bc_new['y'].append(min(line_bc_og['y'])+(i*step_bc))
+                line_bc_new['x'].append(line_bc_og['x'])
+        else:
+            for x in line_bc_new['x']:
+                line_bc_new['x'].append(x)
+                line_bc_new['y'].append(slope_bc*(x-line_bc_og['x'][0])+offset_bc)
+
+        for i in range(len(line_bc_og['x'])):
+            if abs(line_bc_new['y'][i]-line_bc_og['y'][i]) <= margin:
+                perc += perc_step
+
+        # calculate and check line ca
+        if self.line_descends(line_ca_og['y']):
+            slope_ca *= -1
+        if self.line_reversed(line_ca_og['x']):
+            slope_ca *= -1
+
+        offset_ca=line_ca_og['y'][0]
+
+        if slope == 0:
+            step_ca = abs(max(line_ca_og['y'])-min(line_ca_og['y']))/len(line_ca_og['y'])
+            for i in range(len(line_ca_og['y'])):
+                line_ca_new['y'].append(min(line_ca_og['y'])+(i*step_ca))
+                line_ca_new['x'].append(line_ca_og['x'])
+        else:
+            for x in line_ca_new['x']:
+                line_ca_new['x'].append(x)
+                line_ca_new['y'].append(slope_ca*(x-line_ca_og['x'][0])+offset_ca)
+
+        for i in range(len(line_ca_og['x'])):
+            if abs(line_ca_new['y'][i]-line_ca_og['y'][i]) <= margin:
+                perc += perc_step
+
         self.percent['triangle'] = perc
-        if perc > 80:
-            self.__shapes['triangle'] = dict(x=x, y=y_line)
+        if perc >= 80:
+            new_shape = dict(x=[], y=[])
+            for i in range(len(line_ab_new['x'])):
+                new_shape['x'].append(line_ab_new['x'][i])
+                new_shape['y'].append(line_ab_new['y'][i])
+            for i in range(len(line_bc_new['x'])):
+                new_shape['x'].append(line_bc_new['x'][i])
+                new_shape['y'].append(line_bc_new['y'][i])
+            for i in range(len(line_ca_new['x'])):
+                new_shape['x'].append(line_ca_new['x'][i])
+                new_shape['y'].append(line_ca_new['y'][i])
+            self.__shapes['triangle'] = new_shape
             return True
 
         return False
@@ -318,7 +490,7 @@ class Shape_detector():
         #print(len(vals), len(x), (len(vals)/len(x)*100))
 
         if ((len(vals)/len(x)*100) < 15) or (x[-1] == x[0]):
-            print('vertical')
+            #print('vertical')
             return True
         return False
             

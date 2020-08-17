@@ -26,7 +26,7 @@ class MainWindow(tk.Tk):
         self.__init_frames()
         self.bind('<Key-Escape>', self.exit_window)
         self.title('Blackboard')
-        self.geometry('800x800')
+        self.geometry('900x900')
 
     def show_frame(self, name):
         """
@@ -67,6 +67,7 @@ class MainWindow(tk.Tk):
             The event to handle
         """
         if event.keysym == 'Escape':
+            self.frames["DrawPage"].log_setting('settings.txt')
             self.destroy()
     
 class DrawPage(tk.Frame):
@@ -119,9 +120,11 @@ class DrawPage(tk.Frame):
         
         self.bind_all('<Control-Key-s>', lambda e: self.save_figure())
 
-        self.__init_buttons(controller)
+        
         self.__init_drawcanvas()
+        self.__init_buttons(controller)
         self.__init_shape_widgets(controller)
+        self.import_setting('settings.txt')
         
         
     def __init_drawcanvas(self):
@@ -140,8 +143,10 @@ class DrawPage(tk.Frame):
         self.dc = DrawCanvas(parent=self, test='true')
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
-        self.bind_all('<Button-4>', lambda e : self.__change_size(incr=1))
-        self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
+        #self.bind_all('<Button-4>', lambda e : self.__change_size(incr=1))
+        #self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
+        #self.dc.bind('<Control-Button-4>', lambda e : self.dc.zoom(event=e, direction="+"))
+        #self.dc.bind('<Control-Button-5>', lambda e : self.dc.zoom(event=e, direction="-"))
 
     def __init_shape_widgets(self, controller):
         """
@@ -167,6 +172,7 @@ class DrawPage(tk.Frame):
             self.scale_drawing.set(0)
         else:
             self.scale_drawing.set(1)
+        create_tooltip(scaleCheckButton, "Enable/Disable scaling on window resize")
         
         self.shape_correction = tk.IntVar()
         corrCheckButton = tk.Checkbutton(self.shapeCorLabFrame, text='Correct',
@@ -175,22 +181,37 @@ class DrawPage(tk.Frame):
                                          command=self.toggle_shape_correction,
                                          bg='grey')
         corrCheckButton.pack(side='top', fill='both', padx=5)
+        create_tooltip(corrCheckButton, "Enable/Disable shape correction")
 
         if self.dc.correct == True:
             self.shape_correction.set(1)
         else:
             self.shape_correction.set(0)
 
-        corrScale = tk.Scale(self.shapeCorLabFrame,
-                             command=self.set_shape_corr_margin,
+        corrLnScale = tk.Scale(self.shapeCorLabFrame,
+                             command=self.set_shape_corr_margin_ln,
                              bg='grey', troughcolor='grey',
                              orient=tk.HORIZONTAL,
                              showvalue=0,
-                             label='Sensitivity',
+                             label='Line',
                              from_=1,
                              to=100)
-        corrScale.pack(side='top', fill='both', padx=5)
-        corrScale.set(self.dc.margin)
+        corrLnScale.pack(side='top', fill='both', padx=5)
+        corrLnScale.set(self.dc.margin_line)
+        create_tooltip(corrLnScale, "Set line correction sensitivity")
+
+        corrCrclScale = tk.Scale(self.shapeCorLabFrame,
+                             command=self.set_shape_corr_margin_crcl,
+                             bg='grey', troughcolor='grey',
+                             orient=tk.HORIZONTAL,
+                             showvalue=0,
+                             label='Circle',
+                             from_=1,
+                             to=100)
+        corrCrclScale.pack(side='top', fill='both', padx=5)
+        corrCrclScale.set(self.dc.margin_circle)
+        create_tooltip(corrCrclScale, "Set circle correction sensitivity")
+
 
     def __init_style_buttons(self, controller):
         """
@@ -346,6 +367,18 @@ class DrawPage(tk.Frame):
         network: str
             The network ip
         """
+        self.sizeScale = tk.Scale(self.sizeLabFrame,
+                             command=self.set_size,
+                             bg='grey', troughcolor='grey',
+                             orient=tk.VERTICAL,
+                             showvalue=0,
+                             #label='Size',
+                             from_=99,
+                             to=1)
+        self.sizeScale.pack(side='left', fill='both', padx=5)
+        self.sizeScale.set(self.dc.line_width)
+        create_tooltip(self.sizeScale, "Set the pen width")
+        
         buttonPlus = tk.Button(self.sizeLabFrame, text='+',
                                 command=lambda : self.__change_size(incr=1),
                                 bg='grey')
@@ -358,11 +391,11 @@ class DrawPage(tk.Frame):
         buttonMin.pack(side='top', fill='both', padx=10)
         create_tooltip(buttonMin, "Decrease pen size")
 
-        buttonReset = tk.Button(self.sizeLabFrame, text='reset',
-                                command=lambda : self.__change_size(size=2),
-                                bg='grey')
-        buttonReset.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonReset, "Reset pen size")
+        #buttonReset = tk.Button(self.sizeLabFrame, text='reset',
+        #                        command=lambda : self.__change_size(size=2),
+        #                        bg='grey')
+        #buttonReset.pack(side='right', fill='both', padx=10)
+        #create_tooltip(buttonReset, "Reset pen size")
         
         self.__init_size_label(size=2)
         
@@ -436,7 +469,7 @@ class DrawPage(tk.Frame):
         """
         self.size_label = tk.Label(self.sizeLabFrame, text=str(size)+'px',
                                    bg='grey')
-        self.size_label.pack(side='top', fill='both', padx=10)
+        self.size_label.pack(side='left', fill='both', padx=10)
         create_tooltip(self.size_label, "Current size")
 
     def __init_clr_label(self, clr):
@@ -474,8 +507,9 @@ class DrawPage(tk.Frame):
         self.size_label.destroy()
         self.size_label = tk.Label(self.sizeLabFrame, text=str(self.dc.line_width)+'px',
                                    bg='grey')
-        self.size_label.pack(side='bottom', fill='both', padx=10)
+        self.size_label.pack(side='left', fill='both', padx=10)
         create_tooltip(self.size_label, "Current size")
+        self.sizeScale.set(self.dc.line_width)
         
     def change_clr(self, button, clr):
         """
@@ -600,6 +634,67 @@ class DrawPage(tk.Frame):
             The network ip
         """
         self.dc.margin = int(arg)
+
+    def set_shape_corr_margin_ln(self, arg):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        self.dc.margin_line = int(arg)
+
+        
+    def set_shape_corr_margin_crcl(self, arg):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        self.dc.margin_circle = int(arg)
+        
+    def set_shape_corr_margin_trn(self, arg):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        self.dc.margin_triangle = int(arg)
+
+    def set_size(self, arg):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        self.__change_size(size=int(arg))
         
     def update_drawcanvas(self):
         """
@@ -617,6 +712,43 @@ class DrawPage(tk.Frame):
         newcanvas = self.dc
         self.dc.destroy()
         self.dc = newcanvas
+
+    def log_setting(self, logfile):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        #self.line_colour
+        #draw_style
+        #margin_circle
+        #margin_line
+        #scaling
+        #shape_correction
+        
+        pass
+
+    def import_setting(self, logfile):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        pass
 
     
 class AdvSelPage(ttk.Frame):
