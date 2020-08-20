@@ -1,6 +1,8 @@
-from tk_shapes import Line, Text, Graph
+from tk_shapes import Line, Text, Graph, Triangle, Square
 from shape_det import Shape_detector
+from image_prc import image_prc
 
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -55,6 +57,8 @@ class DrawCanvas(tk.Canvas):
         self.draw_style = 'pen'
         self.last_coord = dict(x= None, y= None)
         self.graph_coords = dict(x= None, y= None)
+        self.triangle_coords = dict(x= None, y= None)
+        self.square_coords = dict(x= None, y= None)
         self.correct = True
         self.scale_widg = False
         self.margin = 30
@@ -63,28 +67,8 @@ class DrawCanvas(tk.Canvas):
         self.margin_triangle = self.margin
         self.movement = 20
 
-        self.bind('<Shift-Button-1>', self.draw_straight_line)
-        self.bind('<B1-Motion>', self.draw)
-        self.bind('<Button-1>', self.draw)
-        self.bind('<ButtonRelease-1>', self.mouse_released)
-        self.bind('<Button-2>', self.draw_text)
-        self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr=None)})
-        self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr=None)})
-        self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_clr)})
-        self.bind('<ButtonRelease-3>', self.mouse_released)
-        self.bind('<Control-Button-4>', lambda e : self.zoom(event=e, direction="+"))
-        self.bind('<Control-Button-5>', lambda e : self.zoom(event=e, direction="-"))
-        self.bind('<Shift-Button-4>', self.move_right)
-        self.bind('<Shift-Button-5>', self.move_left)
-        self.bind('<Button-4>', self.move_down)
-        self.bind('<Button-5>', self.move_up)
-        self.bind_all('<Control-slash>', self.undo_line_callback)
-        self.bind_all('<Control-Key-z>', self.undo_line_callback)
-        self.bind_all('<Left>', self.move_right)
-        self.bind_all('<Right>', self.move_left)
-        self.bind_all('<Up>', self.move_down)
-        self.bind_all('<Down>', self.move_up)
-        self.bind('<Key>', self.add_letter)
+        self.init_bindings(args=args, kwargs=kwargs)
+
         self.update()
         self.height =  self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
@@ -109,7 +93,97 @@ class DrawCanvas(tk.Canvas):
             self.line_width = kwargs['line_width']
         if 'line_clr' in kwargs:
             self.line_clr = kwargs['line_clr']
-            
+
+    def init_bindings(self, *args, **kwargs):
+        """
+        Checks the optional arguments for setting of bindings.
+
+        By default, all bindings are being done.
+
+        Parameters
+        ----------
+        *args:
+            Optional and positional arguments
+        **kwargs:
+            Optional and specified arguments
+        """
+        # Bindings of straight line drawing
+        if 'bind_straight_ln' in kwargs:
+            if kwargs['bind_straight_ln']:
+                self.bind('<Shift-Button-1>', self.draw_straight_line)
+        else:
+            self.bind('<Shift-Button-1>', self.draw_straight_line)
+
+        # Bindings of line drawing
+        if 'bind_draw' in kwargs:
+            if kwargs['bind_draw']:
+                self.bind('<B1-Motion>', self.draw)
+                self.bind('<Button-1>', self.draw)
+                self.bind('<ButtonRelease-1>', self.mouse_released)
+        else:
+            self.bind('<B1-Motion>', self.draw)
+            self.bind('<Button-1>', self.draw)
+            self.bind('<ButtonRelease-1>', self.mouse_released)
+
+        # Bindings of text writing
+        if 'bind_text' in kwargs:
+            if kwargs['bind_text']:
+                self.bind('<Button-2>', self.draw_text)
+        else:
+            self.bind('<Button-2>', self.draw_text)
+
+        # Bindings of eraser
+        if 'bind_eraser' in kwargs:
+            if kwargs['bind_eraser']:
+                self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr=None)})
+                self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr=None)})
+                self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_clr)})
+                self.bind('<ButtonRelease-3>', self.mouse_released)
+        else:
+            self.bind('<B3-Motion>', lambda e : {self.draw_line(event=e, clr=None)})
+            self.bind('<Button-3>', lambda e : {self.draw_line(event=e, clr=None)})
+            self.bind('<ButtonRelease-3>', lambda : {self.set_colour(self.line_clr)})
+            self.bind('<ButtonRelease-3>', self.mouse_released)
+
+        # Bindings of zooming
+        if 'bind_zoom' in kwargs:
+            if kwargs['bind_zoom']:
+                self.bind('<Control-Button-4>', lambda e : self.zoom(event=e, direction="+"))
+                self.bind('<Control-Button-5>', lambda e : self.zoom(event=e, direction="-"))
+        else:
+            self.bind('<Control-Button-4>', lambda e : self.zoom(event=e, direction="+"))
+            self.bind('<Control-Button-5>', lambda e : self.zoom(event=e, direction="-"))
+
+        # Bindings of movement
+        if 'bind_movement' in kwargs:
+            if kwargs['bind_movement']:
+                self.bind('<Shift-Button-4>', self.move_right)
+                self.bind_all('<Left>', self.move_right)
+                self.bind('<Shift-Button-5>', self.move_left)
+                self.bind('<Button-4>', self.move_down)
+                self.bind('<Button-5>', self.move_up)
+                self.bind_all('<Left>', self.move_right)
+                self.bind_all('<Right>', self.move_left)
+                self.bind_all('<Up>', self.move_down)
+                self.bind_all('<Down>', self.move_up)
+        else:
+            self.bind('<Shift-Button-4>', self.move_right)
+            self.bind('<Shift-Button-5>', self.move_left)
+            self.bind('<Button-4>', self.move_down)
+            self.bind('<Button-5>', self.move_up)
+            self.bind_all('<Left>', self.move_right)
+            self.bind_all('<Right>', self.move_left)
+            self.bind_all('<Up>', self.move_down)
+            self.bind_all('<Down>', self.move_up)
+
+        # Bindings for undoing
+        if 'bind_undo' in kwargs:
+            if kwargs['bind_undo']:
+                self.bind_all('<Control-slash>', self.undo_line_callback)
+                self.bind_all('<Control-Key-z>', self.undo_line_callback)
+        else:
+            self.bind_all('<Control-slash>', self.undo_line_callback)
+            self.bind_all('<Control-Key-z>', self.undo_line_callback)
 
     def draw(self, event):
         """
@@ -124,10 +198,22 @@ class DrawCanvas(tk.Canvas):
             self.set_text_pos(event)
         elif self.draw_style == 'graph':
             if self.graph_coords['x'] == None:
-               self.graph_coords = dict(x= event.x,
-                                        y= event.y)
+               self.graph_coords = dict(x=event.x,
+                                        y=event.y)
             else:
                 self.draw_graph(event)
+        elif self.draw_style == 'triangle' or self.draw_style == 'triangleR':
+            if self.triangle_coords['x'] == None:
+                self.triangle_coords = dict(x=event.x,
+                                            y=event.y)
+            else:
+                self.draw_triangle(event)
+        elif self.draw_style == 'square':
+            if self.square_coords['x'] == None:
+                self.square_coords = dict(x=event.x,
+                                          y=event.y)
+            else:
+                self.draw_square(event)
         else:
             self.draw_line(event=event, style=self.draw_style)
 
@@ -179,6 +265,46 @@ class DrawCanvas(tk.Canvas):
                                         width=self.line_width,
                                         text="",
                                         font=("tahoma", "12", "normal")))
+
+    def draw_triangle(self, event):
+        """
+        Draws a triangle on the canvas
+
+        Parameters
+        ----------
+        event:
+            The event to process for positional data
+        """
+        self.lines_list.append([])
+        
+        x1, y1 = self.triangle_coords['x'], self.triangle_coords['y']
+        x2, y2 = event.x, event.y
+
+        triangle = Triangle(x=[x1, x2], y=[y1, y2],
+                            clr=self.line_clr,
+                            width=self.line_width, style='triangle')
+
+        if self.draw_style == 'triangleR':
+            tr_style = 'right'
+        else:
+            tr_style = 'acute'
+
+        triangle.id_ = self.create_line(triangle.get_coords(tr_style),
+                                        fill=self.line_clr,
+                                        smooth=False,
+                                        width=self.line_width,
+                                        capstyle=tk.ROUND,
+                                        splinesteps=36)
+
+        self.lines_list[-1].append(triangle)
+
+        self.triangle_coords = dict(x=None, y=None)
+
+    def draw_square(self, event):
+        """
+        """
+        pass
+        
         
     def draw_graph(self, event):
         """
@@ -635,6 +761,10 @@ class DrawCanvas(tk.Canvas):
         style:
             The style to be used
         """
+        if style == 'text':
+            self.bind('<Key>', self.add_letter)
+        elif self.draw_style == 'text':
+            self.unbind('<Key>')
         self.draw_style = style
                 
     def set_colour(self, colour):
@@ -868,6 +998,36 @@ class DrawCanvas(tk.Canvas):
             elif line.style=='graph':
                 self.draw_graph_coords(x=line.x, y=line.y,
                                        clr=line.clr, width=line.width)
+
+    def save(self, invert_clrs=False):
+        """
+        Saves the figure currently visible on the DrawCanvas
+
+        Saves the drawings as a postscript and pops up a filedialog, after which it converts 
+        the file into the user defined file and removes the postscript file.
+
+        Parameters
+        ----------
+        None
+        """
+        temp_file='temp.eps'
+        self.postscript(file=temp_file)
+        img = Image.open(temp_file)
+        name = tk.filedialog.asksaveasfilename(title='Select file',
+                                            filetypes=(('png files', '*.png'),
+                                                       ('pdf files', '*.pdf'),
+                                                       ('jpg files', '*.jpg'),
+                                                       ('all files', '*')))
+
+        # If a name was specified, otherwise remove temp_file and continue
+        if len(name) > 0:
+            img.save(name)
+            image_prc.change_clr(img_name=name, rgb=[255, 255, 255],
+                                 new_rgb=[0, 0, 0], alpha=255)
+            if invert_clrs:
+                image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
+        os.remove(temp_file)
+
 
 
     

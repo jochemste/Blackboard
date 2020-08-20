@@ -102,10 +102,101 @@ class Graph():
         return string
 
 class Triangle():
-    pass
+    id_: list
+
+    def __init__(self, x: list, y: list,
+                 clr=None, style=None, width:list=None):
+        self.x = x
+        self.y = y
+        self.clr=clr
+        self.style=style
+        self.width=width
+
+    def get_coords(self, type_='acute'):
+        if not(type_ == 'acute') and \
+           not(type_ == 'right') and \
+           not(type_ == 'obtuse'):
+            raise ValueError('type_ should be "acute", "right" or "obtuse" '\
+                             '(obtuse is currently unsupported)')
+
+        
+        if self.y[0] < self.y[1]:
+            upside_down = False
+        else:
+            upside_down = True
+
+        if self.x[0] < self.x[1]:
+            inverted = True
+        else:
+            inverted = False
+
+        if upside_down:
+            a_y = max(self.y)
+            b_y = min(self.y)
+            c_y = min(self.y)
+        else:
+            a_y = min(self.y)
+            b_y = max(self.y)
+            c_y = max(self.y)
+
+        if inverted:
+            a_x = min(self.x)
+            b_x = max(self.x)
+            if type_ == "right":
+                c_x = max(self.x)-abs(max(self.x)-min(self.x))
+            else:
+                c_x = min(self.x)-abs(max(self.x)-min(self.x))
+        else:
+            a_x = max(self.x)
+            b_x = min(self.x)
+            if type_ == "right":
+                c_x = min(self.x)+abs(max(self.x)-min(self.x))
+            else:
+                c_x = max(self.x)+abs(max(self.x)-min(self.x))
+
+        return (a_x, a_y, b_x, b_y, c_x, c_y, a_x, a_y)
+
 
 class Square():
-    pass
+    id_: list
+
+    def __init__(self, x: list, y: list,
+                 clr=None, style=None, width:list=None):
+        self.x = x
+        self.y = y
+        self.clr=clr
+        self.style=style
+        self.width=width
+
+class Curve():
+    id_: list
+
+    def __init__(self, x: list, y: list,
+                 clr=None, style=None, width:list=None):
+        self.x = x
+        self.y = y
+        self.clr=clr
+        self.style=style
+        self.width=width
+
+    def get_coords(self):
+        print(self.x, self.y)
+        print(min(self.x), min(self.y), min(self.x), max(self.y),
+               max(self.x)+abs(max(self.x)-min(self.x)), max(self.y))
+        return(min(self.x), min(self.y), min(self.x), max(self.y),
+               max(self.x)+abs(max(self.x)-min(self.x)), max(self.y))
+    
+class Arrow():
+    id_: list
+
+    def __init__(self, x: list, y: list,
+                 clr=None, style=None, width:list=None):
+        self.x = x
+        self.y = y
+        self.clr=clr
+        self.style=style
+        self.width=width
+
 
 class Text(Line):
 

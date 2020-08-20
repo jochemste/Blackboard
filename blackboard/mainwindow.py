@@ -1,11 +1,9 @@
-from image_prc import image_prc
 from gui_utils import create_tooltip
 from drawcanvas import DrawCanvas
 
 import os
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
 from tkinter.colorchooser import askcolor
 from PIL import ImageTk, Image
 
@@ -255,6 +253,18 @@ class DrawPage(tk.Frame):
                                     bg='grey')
         buttonText.pack(side='top', fill='both', padx=5)
         create_tooltip(buttonText, "Set style to text typing")
+
+        buttonTriangle = tk.Button(frameCol1, text=(u'\u25B2'),
+                              command=lambda : self.dc.set_draw_style('triangle'),
+                                    bg='grey')
+        buttonTriangle.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonTriangle, "Set style to acute triangles")
+
+        buttonTriangleR = tk.Button(frameCol2, text=(u'\u25E3'),
+                              command=lambda : self.dc.set_draw_style('triangleR'),
+                                    bg='grey')
+        buttonTriangleR.pack(side='top', fill='both', padx=5)
+        create_tooltip(buttonTriangle, "Set style to right triangles")
 
         buttonGraph = tk.Button(frameCol1, text=(u'\u301C'),
                               command=lambda : self.dc.set_draw_style('graph'),
@@ -555,33 +565,18 @@ class DrawPage(tk.Frame):
         self.clr_label.grid(column=0, row=0, padx=10, columnspan=2)
         self.clr_label.config(width=4)
         
-    def save_figure(self):
+    def save_figure(self, invert_clrs=False):
         """
-        Gets the network ip, omitting the part after the last '.'
-        
+        Saves the figure currently visible on the DrawCanvas
+
+        Saves the drawings as a postscript and pops up a filedialog, after which it converts 
+        the file into the user defined file and removes the postscript file.
+
         Parameters
         ----------
         None
-        
-        Returns
-        -------
-        network: str
-            The network ip
         """
-        temp_file='temp.eps'
-        self.dc.postscript(file=temp_file)
-        img = Image.open(temp_file)
-        name = tk.filedialog.asksaveasfilename(title='Select file',
-                                            filetypes=(('png files', '*.png'),
-                                                       ('pdf files', '*.pdf'),
-                                                       ('all files', '*')))
-
-        if len(name) > 0:
-            img.save(name)
-            image_prc.change_clr(img_name=name, rgb=[255, 255, 255],
-                                 new_rgb=[0, 0, 0], alpha=255)
-            #image_prc.invert_clrs(img_name=name, excl_rgb=[255, 255, 255])
-        os.remove(temp_file)
+        self.dc.save()
 
 
     def toggle_shape_correction(self):
