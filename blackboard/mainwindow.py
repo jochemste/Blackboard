@@ -1,5 +1,6 @@
 from gui_utils import create_tooltip
 from drawcanvas import DrawCanvas
+from file_handler import File_handler
 
 import os
 import tkinter as tk
@@ -25,6 +26,7 @@ class MainWindow(tk.Tk):
         self.bind('<Key-Escape>', self.exit_window)
         self.title('Blackboard')
         self.geometry('900x900')
+        self.protocol("WM_DELETE_WINDOW", self.exit_window)
 
     def show_frame(self, name):
         """
@@ -54,7 +56,7 @@ class MainWindow(tk.Tk):
 
         self.show_frame(DrawPage)
 
-    def exit_window(self, event):
+    def exit_window(self, event=None):
         """
         Event handler to exit the window. 
         Destroys the window when the Escape key is used.
@@ -64,8 +66,8 @@ class MainWindow(tk.Tk):
         event:
             The event to handle
         """
-        if event.keysym == 'Escape':
-            self.frames["DrawPage"].log_setting('settings.txt')
+        if event == None or event.keysym == 'Escape':
+            self.frames[DrawPage].log_setting('settings.txt')
             self.destroy()
     
 class DrawPage(tk.Frame):
@@ -227,56 +229,114 @@ class DrawPage(tk.Frame):
         self.style_buttons = []
         frameCol1 = tk.Frame(self.styleLabFrame, bg='grey')
         frameCol2 = tk.Frame(self.styleLabFrame, bg='grey')
+        frameCol3 = tk.Frame(self.styleLabFrame, bg='grey')
         frameCol1.grid(column=0, row=1, pady=10)
         frameCol2.grid(column=1, row=1, pady=10)
+        frameCol3.grid(column=0, row=2, columnspan=2, pady=10)
+
+        self.style_options = {u'\u2015': 'pen',
+                              u'\u002D\u002D\u002D': 'dash',
+                              u'\u002E\u002E\u002E': 'dot',
+                              'A': 'text',
+                              u'\u25B2': 'triangle',
+                              u'\u25E3': 'triangleR',
+                              u'\u221F': 'graph',
+                              u'\u25A1': 'square',
+                              u'\u2B05': 'arrow'}
+
+        styleslist = []
+        for style in self.style_options.items():
+            styleslist.append(style[0])
+        
+        self.styleComboBox = ttk.Combobox(frameCol3,
+                                     values=styleslist,
+                                     width=10)
+        self.styleComboBox.pack(side='top', fill='both', padx=5)
+        self.styleComboBox.set(styleslist[0])
+        self.styleComboBox.bind('<<ComboboxSelected>>', lambda e:\
+                           self.change_style(self.style_options[self.styleComboBox.get()]))
+        #                   self.dc.set_draw_style(self.style_options[self.styleComboBox.get()]))
 
         buttonPen = tk.Button(frameCol1, text=(u'\u2015'),
-                              command=lambda : self.dc.set_draw_style('pen'),
+                              command=lambda : (self.change_style('pen'),
+                                                #self.dc.set_draw_style('pen'),
+                                                self.styleComboBox.set(u'\u2015')),
                                     bg='grey')
         buttonPen.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonPen)
         create_tooltip(buttonPen, "Set style to pencil")
 
         buttonDash = tk.Button(frameCol2, text=(u'\u002D\u002D\u002D'),
-                               command=lambda : self.dc.set_draw_style('dash'),
+                               command=lambda : (self.change_style('dash'),
+                                                #self.dc.set_draw_style('dash'),
+                                                 self.styleComboBox.set(u'\u002D\u002D\u002D')),
                                     bg='grey')
         buttonDash.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonDash)
         create_tooltip(buttonDash, "Set style to dashes")
 
         buttonDot = tk.Button(frameCol1, text=(u'\u002E\u002E\u002E'),
-                              command=lambda : self.dc.set_draw_style('dot'),
+                              command=lambda : (self.change_style('dot'),
+                                                #self.dc.set_draw_style('dot'),
+                                                self.styleComboBox.set(u'\u002E\u002E\u002E')),
                                     bg='grey')
         buttonDot.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonDot)
         create_tooltip(buttonDot, "Set style to dots")
 
         buttonText = tk.Button(frameCol2, text='A', font=('Courier', 12, 'bold'),
-                               command=lambda : self.dc.set_draw_style('text'),
+                               command=lambda : (self.change_style('text'),
+                                                #self.dc.set_draw_style('text'),
+                                                 self.styleComboBox.set('A')),
                                     bg='grey')
         buttonText.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonText)
         create_tooltip(buttonText, "Set style to text typing")
 
         buttonTriangle = tk.Button(frameCol1, text=(u'\u25B2'),
-                              command=lambda : self.dc.set_draw_style('triangle'),
+                              command=lambda : (self.change_style('triangle'),
+                                                #self.dc.set_draw_style('triangle'),
+                                                 self.styleComboBox.set(u'\u25B2')),
                                     bg='grey')
         buttonTriangle.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonTriangle)
         create_tooltip(buttonTriangle, "Set style to acute triangles")
 
         buttonTriangleR = tk.Button(frameCol2, text=(u'\u25E3'),
-                              command=lambda : self.dc.set_draw_style('triangleR'),
+                              command=lambda : (self.change_style('triangleR'),
+                                                #self.dc.set_draw_style('triangleR'),
+                                                 self.styleComboBox.set(u'\u25E3')),
                                     bg='grey')
         buttonTriangleR.pack(side='top', fill='both', padx=5)
-        create_tooltip(buttonTriangle, "Set style to right triangles")
+        self.style_buttons.append(buttonTriangleR)
+        create_tooltip(buttonTriangleR, "Set style to right triangles")
 
-        buttonGraph = tk.Button(frameCol1, text=(u'\u301C'),
-                              command=lambda : self.dc.set_draw_style('graph'),
+        buttonGraph = tk.Button(frameCol1, text=(u'\u221F'),
+                              command=lambda : (self.change_style('graph'),
+                                                #self.dc.set_draw_style('graph'),
+                                                 self.styleComboBox.set(u'\u221F')),
                                     bg='grey')
         buttonGraph.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonGraph)
         create_tooltip(buttonGraph, "Set style to graph plotting")
 
         buttonSquare = tk.Button(frameCol2, text=(u'\u25A1'),
-                                 command=lambda : self.dc.set_draw_style('rect'),
+                                 command=lambda : (self.change_style('square'),
+                                                #self.dc.set_draw_style('square'),
+                                                 self.styleComboBox.set(u'\u25A1')),
                                     bg='grey')
         buttonSquare.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonSquare)
         create_tooltip(buttonSquare, "Set style to rectangular drawing")
+
+        buttonArrow = tk.Button(frameCol2, text=(u'\u2B05'),
+                                 command=lambda : (self.change_style('arrow'),
+                                                   #self.dc.set_draw_style('arrow'),
+                                                   self.styleComboBox.set(u'\u2B05')),
+                                    bg='grey')
+        buttonArrow.pack(side='top', fill='both', padx=5)
+        self.style_buttons.append(buttonArrow)
+        create_tooltip(buttonArrow, "Set style to arrow drawing")
 
     def __init_clr_buttons(self, controller):
         """
@@ -543,6 +603,32 @@ class DrawPage(tk.Frame):
         for but in self.clr_buttons:
             but['state'] = tk.NORMAL
         button['state'] = tk.DISABLED
+
+    def change_style(self, style):
+        """
+        Gets the network ip, omitting the part after the last '.'
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        network: str
+            The network ip
+        """
+        self.dc.set_draw_style(style)
+        for button in self.style_buttons:
+            button['state'] = tk.NORMAL
+
+        for s in self.style_options.items():
+            if s[1] == style:
+                buttonLabel = s[0]
+
+        for button in self.style_buttons:
+            if button['text'] == buttonLabel:
+                button['state'] = tk.DISABLED
+        
         
     def select_clr(self):
         """
@@ -727,8 +813,25 @@ class DrawPage(tk.Frame):
         #margin_line
         #scaling
         #shape_correction
-        
-        pass
+        f_handler = File_handler(logfile)
+        f_handler.clear_file()
+
+        data = 'line_colour:'+str(self.dc.line_clr)
+        data += '\n'
+        data += 'draw_style:'+str(self.dc.draw_style)
+        data += '\n'
+        data += 'line_width:'+str(self.dc.line_width)
+        data += '\n'
+        data += 'scaling:'+str(self.dc.scale_widg)
+        data += '\n'
+        data += 'line_width:'+str(self.dc.line_width)
+        data += '\n'
+        data += 'line_width:'+str(self.dc.line_width)
+        data += '\n'
+        data += 'line_width:'+str(self.dc.line_width)
+        data += '\n'
+
+        f_handler.write_data(data)
 
     def import_setting(self, logfile):
         """
@@ -743,7 +846,42 @@ class DrawPage(tk.Frame):
         network: str
             The network ip
         """
-        pass
+        f_handler = File_handler(logfile)
+
+        data = f_handler.read_data()
+
+        for line in data:
+            if 'line_colour' in line:
+                clr = line.split(':')[1]
+                clr = clr.split('\n')[0]
+                for button in self.clr_buttons:
+                    if clr.startswith(button['text']):
+                        self.change_clr(button, clr)
+                        break
+            elif 'draw_style' in line:
+                style = line.split(':')[1]
+                style = style.split('\n')[0]
+                self.change_style(style)
+                for s in self.style_options.items():
+                    if style == s[1]:
+                        self.styleComboBox.set(s[0])
+                        break
+            elif 'line_width' in line:
+                pass
+            elif '' in line:
+                pass
+            elif '' in line:
+                pass
+            elif '' in line:
+                pass
+            elif '' in line:
+                pass
+            elif '' in line:
+                pass
+            elif '' in line:
+                pass
+            elif '' in line:
+                pass
 
     
 class AdvSelPage(ttk.Frame):

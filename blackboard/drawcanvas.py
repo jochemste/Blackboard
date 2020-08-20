@@ -761,6 +761,7 @@ class DrawCanvas(tk.Canvas):
         style:
             The style to be used
         """
+        print(style)
         if style == 'text':
             self.bind('<Key>', self.add_letter)
         elif self.draw_style == 'text':
