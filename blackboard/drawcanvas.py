@@ -282,7 +282,7 @@ class DrawCanvas(tk.Canvas):
 
         triangle = Triangle(x=[x1, x2], y=[y1, y2],
                             clr=self.line_clr,
-                            width=self.line_width, style='triangle')
+                            width=self.line_width, style=self.draw_style)
 
         if self.draw_style == 'triangleR':
             tr_style = 'right'
@@ -324,12 +324,20 @@ class DrawCanvas(tk.Canvas):
         graph = Graph(x=[x1,x2],y=[y1,y2], clr=self.line_clr,
                       width=self.line_width, style='graph')
 
-        graph.id_ = self.create_line(graph.get_xy_axis(),
+        graph.id_ = [self.create_line(graph.get_xy_axis(),
                                fill=self.line_clr,
                                smooth=True,
                                width=self.line_width,
                                capstyle=tk.ROUND,
-                               splinesteps=36)
+                               splinesteps=36)]
+
+        for line in graph.get_support_lines():
+            graph.id_.append(self.create_line(line,
+                                              fill=self.line_clr,
+                                              smooth=True,
+                                              width=self.line_width,
+                                              capstyle=tk.ROUND,
+                                              splinesteps=36))
 
         self.lines_list[-1].append(graph)
 
@@ -362,12 +370,20 @@ class DrawCanvas(tk.Canvas):
         graph = Graph(x=x,y=y, clr=clr,
                       width=l_width, style='graph')
 
-        graph.id_ = self.create_line(graph.get_xy_axis(),
+        graph.id_ = [self.create_line(graph.get_xy_axis(),
                                fill=clr,
                                smooth=True,
                                width=l_width,
                                capstyle=tk.ROUND,
-                               splinesteps=36)
+                               splinesteps=36)]
+
+        for line in graph.get_support_lines():
+            graph.id_.append(self.create_line(line,
+                                              fill=self.line_clr,
+                                              smooth=True,
+                                              width=self.line_width,
+                                              capstyle=tk.ROUND,
+                                              splinesteps=36))
 
         self.lines_list[-1].append(graph)
 
@@ -573,6 +589,79 @@ class DrawCanvas(tk.Canvas):
             self.last_coord['x'] = x2
             self.last_coord['y'] = y2
 
+    def draw_shape_coords(self, x, y,
+                          clr='', width=None, style=None):
+        """
+        Draws shapes on the canvas based on the given coordinates
+        
+        Parameters
+        ----------
+        x1:
+            The start x coordinate
+
+        y1:
+            The start y coordinate
+
+        x2:
+            The end x coordinate
+
+        y2:
+            The end y coordinate
+
+        coords:
+            A prepared set of coordinates in the format as needed by the canvas. 
+            This also allows a number of lines to be drawn.
+
+        clr:
+            The colour of the line(s)
+
+        width:
+            The width of the line(s)
+
+        style:
+            The style of the line(s)
+        """
+        if width ==  None:
+            l_width = self.line_width
+        else:
+            l_width = width
+        if style == None:
+            l_style=self.draw_style
+        else:
+            l_style = style
+
+        if clr == '':
+           clr = self.line_clr
+        self.lines_list.append([])
+
+        if l_style == 'triangle':
+            shape = Triangle(x=x, y=y, clr=clr,
+                             style=l_style, width=l_width)
+            shape.id_ = self.create_line(shape.get_coords(),
+                                         fill=clr,
+                                         smooth=False,
+                                         width=l_width,
+                                         capstyle=tk.ROUND,
+                                         splinesteps=36)
+        elif l_style == 'triangleR':
+            shape = Triangle(x=x, y=y, clr=clr,
+                             style=l_style, width=l_width)
+            shape.id_ = self.create_line(shape.get_coords(type_='right'),
+                                         fill=clr,
+                                         smooth=False,
+                                         width=l_width,
+                                         capstyle=tk.ROUND,
+                                         splinesteps=36)
+        elif l_style == 'square':
+            pass
+        elif l_style == 'arrow':
+            pass
+
+        self.lines_list[-1].append(shape)
+        
+        self.last_coord['x'] = x[-1]
+        self.last_coord['y'] = y[-1]
+
     def draw_straight_line(self, event, clr=''):
         """
         Draws a straight line
@@ -722,6 +811,10 @@ class DrawCanvas(tk.Canvas):
         """
         if len(self.lines_list) >= 1:
             for line in self.lines_list[-1]:
+                if type(line.id_) == list:
+                    for id_ in line.id_:
+                        print(line.style)
+                        self.delete(id_)
                 self.delete(line.id_)
         
             del self.lines_list[-1]
@@ -761,7 +854,6 @@ class DrawCanvas(tk.Canvas):
         style:
             The style to be used
         """
-        print(style)
         if style == 'text':
             self.bind('<Key>', self.add_letter)
         elif self.draw_style == 'text':
@@ -993,6 +1085,10 @@ class DrawCanvas(tk.Canvas):
                                       x2=line.x[1], y2=line.y[1],
                                       clr=line.clr, width=line.width,
                                       style=line.style)
+            elif 'triangle' in line.style or line.style=='square':
+                self.draw_shape_coords(x=line.x, y=line.y, clr=line.clr,
+                                       width=line.width,
+                                       style=line.style)
             elif line.style=='text':
                 self.draw_text_coords(text=line.text, x=line.x, y=line.y,
                                       clr=line.clr, font=line.font)

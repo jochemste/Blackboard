@@ -54,6 +54,9 @@ class Line(BaseLine):
         return string
 
 class Graph():
+    """
+    A class that supports the creation of a graph template
+    """
     id_: list
 
     def __init__(self, x: list, y: list,
@@ -82,6 +85,34 @@ class Graph():
     def get_xy_axis(self):
         return (self.x[0], self.y[0], self.x[0], self.y[1],
                 self.x[0], self.y[1], self.x[1], self.y[1])
+
+    def get_support_line1_yaxis(self):
+        line1_y = max(self.y)-abs(max(self.y)-min(self.y))
+        line1_x1 = min(self.x)-self.width*2
+        line1_x2 = min(self.x)+self.width*2
+        return(line1_x1, line1_y, line1_x2, line1_y)
+
+    def get_support_line2_yaxis(self):
+        line2_y = max(self.y)-(abs(max(self.y)-min(self.y))/2)
+        line2_x1 = min(self.x)-self.width*2
+        line2_x2 = min(self.x)+self.width*2
+        return(line2_x1, line2_y, line2_x2, line2_y)
+
+    def get_support_line1_xaxis(self):
+        line1_y1 = max(self.y)-self.width*2
+        line1_y2 = max(self.y)+self.width*2
+        line1_x = max(self.x)
+        return(line1_x, line1_y1, line1_x, line1_y2)
+
+    def get_support_line2_xaxis(self):
+        line1_y1 = max(self.y)-self.width*2
+        line1_y2 = max(self.y)+self.width*2
+        line1_x = max(self.x)-(abs(max(self.x)-min(self.x))/2)
+        return(line1_x, line1_y1, line1_x, line1_y2)
+
+    def get_support_lines(self):
+        return [self.get_support_line1_yaxis(), self.get_support_line2_yaxis(),
+                self.get_support_line1_xaxis(), self.get_support_line2_xaxis()]
 
     def get_origin(self):
         return (self.x[0], self.y[1])

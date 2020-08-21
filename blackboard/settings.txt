@@ -1,5 +1,5 @@
-line_colour:red
-draw_style:pen
+line_colour:lightgrey
+draw_style:triangle
 line_width:2
 scaling:False
 line_width:2
