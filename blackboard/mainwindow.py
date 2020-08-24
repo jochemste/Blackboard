@@ -1005,17 +1005,7 @@ class AdvSelPage(ttk.Frame):
         """
         Initialises the buttons
         """
-        buttonDraw = tk.Button(self.menuFrameLab, text='Home',
-                               command= lambda : controller.show_frame(DrawPage),
-                               bg='grey')
-        buttonDraw.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonDraw, "Return to home")
-
-        buttonShapeTest = tk.Button(self.shapeFrameLab, text='Shape test',
-                                    command= lambda : print('test'),
-                                    bg='grey')
-        buttonShapeTest.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonShapeTest, "Test")
+        pass
 
     def __init_graph_widgets(self, controller):
         """
