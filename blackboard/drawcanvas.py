@@ -158,23 +158,14 @@ class DrawCanvas(tk.Canvas):
         if 'bind_movement' in kwargs:
             if kwargs['bind_movement']:
                 self.bind('<Shift-Button-4>', self.move_right)
-                self.bind_all('<Left>', self.move_right)
                 self.bind('<Shift-Button-5>', self.move_left)
                 self.bind('<Button-4>', self.move_down)
                 self.bind('<Button-5>', self.move_up)
-                self.bind_all('<Left>', self.move_right)
-                self.bind_all('<Right>', self.move_left)
-                self.bind_all('<Up>', self.move_down)
-                self.bind_all('<Down>', self.move_up)
         else:
             self.bind('<Shift-Button-4>', self.move_right)
             self.bind('<Shift-Button-5>', self.move_left)
             self.bind('<Button-4>', self.move_down)
             self.bind('<Button-5>', self.move_up)
-            self.bind_all('<Left>', self.move_right)
-            self.bind_all('<Right>', self.move_left)
-            self.bind_all('<Up>', self.move_down)
-            self.bind_all('<Down>', self.move_up)
 
         # Bindings for undoing
         if 'bind_undo' in kwargs:
@@ -265,6 +256,24 @@ class DrawCanvas(tk.Canvas):
                                         width=self.line_width,
                                         text="",
                                         font=("tahoma", "12", "normal")))
+
+    def set_background_checkered(self, density=50):
+        """
+        """
+        self.background = []
+        max_x = 6000
+        max_y = 6000
+        for x in range(density, max_x, density):
+            self.background.append(self.create_line(x, 0, x, max_y, fill=self.line_clr))
+
+        for y in range(density, max_y, density):
+            self.background.append(self.create_line(0, y, max_x, y, fill=self.line_clr))
+
+    def clear_background(self):
+        """
+        """
+        for id_ in self.background:
+            self.delete(id_)
 
     def draw_triangle(self, event):
         """
@@ -367,6 +376,9 @@ class DrawCanvas(tk.Canvas):
         if l_width == None:
             l_width = self.line_width
 
+        if clr == '':
+            clr = self.line_clr
+
         graph = Graph(x=x,y=y, clr=clr,
                       width=l_width, style='graph')
 
@@ -379,17 +391,16 @@ class DrawCanvas(tk.Canvas):
 
         for line in graph.get_support_lines():
             graph.id_.append(self.create_line(line,
-                                              fill=self.line_clr,
+                                              fill=clr,
                                               smooth=True,
-                                              width=self.line_width,
+                                              width=l_width,
                                               capstyle=tk.ROUND,
                                               splinesteps=36))
 
         self.lines_list[-1].append(graph)
 
-        
-
-        #self.draw_text_coords('0', graph.get_origin()[0]-10, graph.get_origin()[1]+10)
+        self.draw_text_coords('0', graph.get_origin()[0]-10, graph.get_origin()[1]+10,
+                              clr=clr)
         
         self.graph_coords['x']=None
         self.graph_coords['y']=None

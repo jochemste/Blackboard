@@ -1,6 +1,7 @@
-from gui_utils import create_tooltip
+from gui_utils import create_tooltip, Entry_w_Placeholder
 from drawcanvas import DrawCanvas
 from file_handler import File_handler
+import math
 
 import os
 import tkinter as tk
@@ -23,10 +24,45 @@ class MainWindow(tk.Tk):
         """
         super().__init__(*args, **kwargs)
         self.__init_frames()
+        self.__init_menu()
         self.bind('<Key-Escape>', self.exit_window)
+        self.bind('<Control-Key-d>', self.exit_window)
         self.title('Blackboard')
-        self.geometry('900x900')
+        #self.geometry('1000x1000')
         self.protocol("WM_DELETE_WINDOW", self.exit_window)
+
+
+    def __init_menu(self):
+        """
+        """
+        menuBar = tk.Menu(self, bg='grey')
+
+        menuFile = tk.Menu(menuBar, tearoff=0)
+        menuFile.add_command(label='Save <C-s>',
+                             command=self.frames[DrawPage].save_figure)
+        menuFile.add_command(label='Exit <Esc>',
+                             command=self.exit_window)
+        menuBar.add_cascade(label='File', menu=menuFile)
+        
+        menuEdit = tk.Menu(menuBar, tearoff=0)
+        menuEdit.add_command(label='Undo <C-/><C-z>',
+                             command=self.frames[DrawPage].dc.undo_line)
+        menuEdit.add_command(label='Clear',
+                             command=self.frames[DrawPage].dc.clear)
+        menuBar.add_cascade(label='Edit', menu=menuEdit)
+
+        menuPages = tk.Menu(menuBar, tearoff=0)
+        menuPages.add_command(label='Home',
+                              command=lambda:self.show_frame(DrawPage))
+        menuPages.add_command(label='Advanced options',
+                              command=lambda:self.show_frame(AdvSelPage))
+        menuBar.add_cascade(label='Pages', menu=menuPages)
+
+        menuStyle = tk.Menu(menuBar, tearoff=0)
+        menuBar.add_cascade(label='Styles', menu=menuStyle)
+
+        self.config(menu=menuBar)
+        
 
     def show_frame(self, name):
         """
@@ -52,9 +88,15 @@ class MainWindow(tk.Tk):
         for F in (DrawPage, AdvSelPage):
             frame = F(container, self)
             self.frames[F] = frame
-            frame.pack(fill=tk.BOTH, expand=True)
+            frame.grid(row=0, column=0, sticky='nsew')
 
         self.show_frame(DrawPage)
+
+    def call_function(self, member, function, p1, p2, p3=None, p4=None):
+        """
+        Allows members to call functions from other members
+        """
+        function(self.frames[member], p1, p2, p3, p4)
 
     def exit_window(self, event=None):
         """
@@ -66,9 +108,8 @@ class MainWindow(tk.Tk):
         event:
             The event to handle
         """
-        if event == None or event.keysym == 'Escape':
-            self.frames[DrawPage].log_setting('settings.txt')
-            self.destroy()
+        self.frames[DrawPage].log_setting('settings.txt')
+        self.destroy()
     
 class DrawPage(tk.Frame):
     """
@@ -119,14 +160,12 @@ class DrawPage(tk.Frame):
         self.menuLabFrame.pack(side='top', fill='both', padx=5)
         
         self.bind_all('<Control-Key-s>', lambda e: self.save_figure())
-
         
         self.__init_drawcanvas()
         self.__init_buttons(controller)
         self.__init_shape_widgets(controller)
         self.import_setting('settings.txt')
-        
-        
+
     def __init_drawcanvas(self):
         """
         Gets the network ip, omitting the part after the last '.'
@@ -143,10 +182,6 @@ class DrawPage(tk.Frame):
         self.dc = DrawCanvas(parent=self, test='true')
         self.dc.pack(expand=True)
         self.bind('<Configure>', self.dc.on_resize)
-        #self.bind_all('<Button-4>', lambda e : self.__change_size(incr=1))
-        #self.bind_all('<Button-5>', lambda e : self.__change_size(decr=1))
-        #self.dc.bind('<Control-Button-4>', lambda e : self.dc.zoom(event=e, direction="+"))
-        #self.dc.bind('<Control-Button-5>', lambda e : self.dc.zoom(event=e, direction="-"))
 
     def __init_shape_widgets(self, controller):
         """
@@ -249,8 +284,9 @@ class DrawPage(tk.Frame):
             styleslist.append(style[0])
         
         self.styleComboBox = ttk.Combobox(frameCol3,
-                                     values=styleslist,
-                                     width=10)
+                                          values=styleslist,
+                                          width=10,
+                                          state='readonly')
         self.styleComboBox.pack(side='top', fill='both', padx=5)
         self.styleComboBox.set(styleslist[0])
         self.styleComboBox.bind('<<ComboboxSelected>>', lambda e:\
@@ -482,28 +518,34 @@ class DrawPage(tk.Frame):
         network: str
             The network ip
         """
-        buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
-                               command=lambda : {self.dc.undo_line()},
-                               bg='grey')
-        buttonUndo.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonUndo, "Undo last move")
+                
+        #buttonUndo = tk.Button(self.menuLabFrame, text='Undo',
+        #                       command=lambda : {self.dc.undo_line()},
+        #                       bg='grey')
+        #buttonUndo.pack(side='top', fill='both', padx=10)
+        #create_tooltip(buttonUndo, "Undo last move")
         
-        buttonSave = tk.Button(self.menuLabFrame, text='Save',
-                               command=lambda : {self.save_figure()},
-                               bg='grey')
-        buttonSave.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonSave, "Save drawing")
+        #buttonSave = tk.Button(self.menuLabFrame, text='Save',
+        #                       command=lambda : {self.save_figure()},
+        #                       bg='grey')
+        #buttonSave.pack(side='top', fill='both', padx=10)
+        #create_tooltip(buttonSave, "Save drawing")
 
-        buttonClear = tk.Button(self.menuLabFrame, text='Clear',
-                               command=lambda : {self.dc.clear()},
-                               bg='grey')
-        buttonClear.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonClear, "Clear the screen")
+        #buttonClear = tk.Button(self.menuLabFrame, text='Clear',
+        #                       command=lambda : {self.dc.clear()},
+        #                       bg='grey')
+        #buttonClear.pack(side='top', fill='both', padx=10)
+        #create_tooltip(buttonClear, "Clear the screen")
 
-        buttonExit = tk.Button(self.menuLabFrame, text='Exit',
-                                 command=lambda : controller.destroy(), bg='grey')
-        buttonExit.pack(side='top', fill='both', padx=10)
-        create_tooltip(buttonExit, "Exit the program")
+        #buttonAdvs = tk.Button(self.menuLabFrame, text='Advanced',
+        #                         command=lambda : controller.show_frame(AdvSelPage), bg='grey')
+        #buttonAdvs.pack(side='top', fill='both', padx=10)
+        #create_tooltip(buttonAdvs, "Advanced settings")
+
+        #buttonExit = tk.Button(self.menuLabFrame, text='Exit',
+        #                         command=lambda : controller.exit_window(), bg='grey')
+        #buttonExit.pack(side='top', fill='both', padx=10)
+        #create_tooltip(buttonExit, "Exit the program")
 
         
     def __init_buttons(self, controller):
@@ -665,7 +707,7 @@ class DrawPage(tk.Frame):
         self.dc.save()
 
 
-    def toggle_shape_correction(self):
+    def toggle_shape_correction(self, set_=None):
         """
         Gets the network ip, omitting the part after the last '.'
         
@@ -678,12 +720,15 @@ class DrawPage(tk.Frame):
         network: str
             The network ip
         """
-        if self.shape_correction.get() == 1:
+        if not(set_ == None):
+            self.dc.correct = set_
+            self.shape_correction.set(set_)
+        elif self.shape_correction.get() == 1:
             self.dc.correct = True
         else:
             self.dc.correct = False
 
-    def toggle_scaling(self):
+    def toggle_scaling(self, set_=None):
         """
         Gets the network ip, omitting the part after the last '.'
         
@@ -696,7 +741,10 @@ class DrawPage(tk.Frame):
         network: str
             The network ip
         """
-        if self.scale_drawing.get() == 1:
+        if not(set_ == None):
+            self.dc.scale_widg = bool(set_)
+            self.scale_drawing.set(set_)
+        elif self.scale_drawing.get() == 1:
             self.dc.scale_widg = True
         else:
             self.dc.scale_widg = False
@@ -822,13 +870,13 @@ class DrawPage(tk.Frame):
         data += '\n'
         data += 'line_width:'+str(self.dc.line_width)
         data += '\n'
-        data += 'scaling:'+str(self.dc.scale_widg)
+        data += 'scaling:'+str(int(self.dc.scale_widg))
         data += '\n'
-        data += 'line_width:'+str(self.dc.line_width)
+        data += 'shape_correction:'+str(int(self.dc.correct))
         data += '\n'
-        data += 'line_width:'+str(self.dc.line_width)
+        data += 'margin_line:'+str(self.dc.margin_line)
         data += '\n'
-        data += 'line_width:'+str(self.dc.line_width)
+        data += 'margin_circle:'+str(self.dc.margin_circle)
         data += '\n'
 
         f_handler.write_data(data)
@@ -867,21 +915,60 @@ class DrawPage(tk.Frame):
                         self.styleComboBox.set(s[0])
                         break
             elif 'line_width' in line:
+                width = line.split(':')[1]
+                width = int(width.split('\n')[0])
+                self.__change_size(size=width)
+            elif 'scaling' in line:
+                scale = line.split(':')[1]
+                scale = int(scale.split('\n')[0])
+                self.toggle_scaling(set_=scale)
+            elif 'shape_correction' in line:
+                corr = line.split(':')[1]
+                corr = int(corr.split('\n')[0])
+                self.toggle_shape_correction(set_=corr)
+            elif 'margin_line' in line:
                 pass
-            elif '' in line:
+            elif 'margin_circle' in line:
                 pass
-            elif '' in line:
-                pass
-            elif '' in line:
-                pass
-            elif '' in line:
-                pass
-            elif '' in line:
-                pass
-            elif '' in line:
-                pass
-            elif '' in line:
-                pass
+
+    def callback_draw_graph(self, x, y, clr='', width=None):
+        """
+        """
+        if not(type(x) == list) or len(x) <= 1:
+            raise ValueError('x should contain at least two sets of coordinates')
+        if not(type(y) == list) or len(y) <= 1:
+            raise ValueError('y should contain at least two sets of coordinates')
+        self.dc.draw_graph_coords(x=x, y=y, clr=clr, width=width)
+
+    def callback_draw_sine(self, x, y, periods=1, freq=1):
+        """
+        """
+        x_step = 2*math.pi*freq/(max(x)-min(x))
+        y_amp = max(y)-min(y)
+
+        sine = []
+
+        for i in range(0, (max(x)-min(x))*periods):
+            sine.append(min(x)+i)
+            sine.append(max(y)-y_amp*math.sin(i*x_step))
+
+        self.dc.draw_line_coords(coords=sine)#, style='dash')
+        self.dc.draw_graph_coords(x=x, y=y, clr='#BBBBBB')
+
+    def callback_draw_cosine(self, x, y, periods=1, freq=1):
+        """
+        """
+        x_step = 2*math.pi*freq/(max(x)-min(x))
+        y_amp = max(y)-min(y)
+
+        cosine = []
+
+        for i in range(0, (max(x)-min(x))*periods):
+            cosine.append(min(x)+i)
+            cosine.append(max(y)-y_amp*math.cos(i*x_step))
+
+        self.dc.draw_line_coords(coords=cosine)#, style='dot')
+        self.dc.draw_graph_coords(x=x, y=y, clr='#BBBBBB')
 
     
 class AdvSelPage(ttk.Frame):
@@ -894,6 +981,134 @@ class AdvSelPage(ttk.Frame):
         Class constructor
         """
         super().__init__(parent)
+        self.__init_frames()
+        self.__init_buttons(controller=controller)
+        self.__init_graph_widgets(controller=controller)
+
+    def __init_frames(self):
+        """
+        Initialises the frames
+        """
+        self.config(cursor='hand1')
+        
+        self.menuFrameLab = tk.LabelFrame(self, text='Menu', bg='grey')
+        #self.menuFrameLab.config(cursor='hand1')
+        self.menuFrameLab.pack(side='left', fill='both')
+
+        self.shapeFrameLab = tk.LabelFrame(self, text='Shapes', bg='grey')
+        self.shapeFrameLab.pack(side='left', fill='both')
+
+        self.graphFrameLab = tk.LabelFrame(self, text='Graph', bg='grey')
+        self.graphFrameLab.pack(side='left', fill='both')
+
+    def __init_buttons(self, controller):
+        """
+        Initialises the buttons
+        """
+        buttonDraw = tk.Button(self.menuFrameLab, text='Home',
+                               command= lambda : controller.show_frame(DrawPage),
+                               bg='grey')
+        buttonDraw.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonDraw, "Return to home")
+
+        buttonShapeTest = tk.Button(self.shapeFrameLab, text='Shape test',
+                                    command= lambda : print('test'),
+                                    bg='grey')
+        buttonShapeTest.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonShapeTest, "Test")
+
+    def __init_graph_widgets(self, controller):
+        """
+        Initialises the graph related widgets
+        
+        Parameters
+        ----------
+        controller:
+            The controlling widget
+        """
+        fLeft = tk.Frame(self.graphFrameLab, bg='grey')
+        fLeft.pack(side='left')
+        fRight = tk.Frame(self.graphFrameLab, bg='grey')
+        fRight.pack(side='left')
+        xlabel = tk.Label(fLeft, text='x:', bg='grey')
+        xlabel.pack(side='top', padx=10)
+
+        xentry = Entry_w_Placeholder(fRight, placeholder='100, 300')
+        xentry.pack(side='top', padx=10)
+
+        ylabel = tk.Label(fLeft, text='y:', bg='grey')
+        ylabel.pack(side='top', padx=10)
+
+        yentry = Entry_w_Placeholder(fRight, placeholder='100, 200')
+        yentry.pack(side='top', padx=10)
+
+        periodScale = tk.Scale(fLeft,
+                               command=lambda e:(),
+                               bg='grey', troughcolor='grey',
+                               orient=tk.HORIZONTAL,
+                               label='Periods',
+                               from_=10,
+                               to=1)
+        periodScale.pack(side='top', fill='both', padx=5)
+        periodScale.set(1)
+        create_tooltip(periodScale, "Set number of periods")
+
+        freqLabel = tk.Label(fLeft, text='Frequency:', bg='grey')
+        freqLabel.pack(side='top', fill='both', padx=5)
+        freqEntry = Entry_w_Placeholder(fRight, placeholder='1')
+        freqEntry.pack(side='top', fill='both', padx=5)
+        create_tooltip(freqEntry, "Set frequency in Hz")
+
+        sinFunc = lambda:(controller.call_function(member=DrawPage,
+                                                   function=DrawPage.callback_draw_sine,
+                                                   p1=self.convert_t_list(xentry.get().split(','), int),
+                                                   p2=self.convert_t_list(yentry.get().split(','), int),
+                                                   p3=periodScale.get(),
+                                                   p4=float(freqEntry.get())))
+
+        buttonSine = tk.Button(self.graphFrameLab, text='Sine wave',
+                               command= sinFunc,
+                               bg='grey')
+        buttonSine.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonSine, 'Creates a sine wave')
+
+        cosFunc = lambda:(controller.call_function(member=DrawPage,
+                                                   function=DrawPage.callback_draw_cosine,
+                                                   p1=self.convert_t_list(xentry.get().split(','), int),
+                                                   p2=self.convert_t_list(yentry.get().split(','), int),
+                                                   p3=periodScale.get(),
+                                                   p4=float(freqEntry.get())))
+        
+        buttonCos = tk.Button(self.graphFrameLab, text='Cosine wave',
+                               command= cosFunc,
+                               bg='grey')
+        buttonCos.pack(side='top', fill='both', padx=10)
+        create_tooltip(buttonCos, 'Creates a cosine wave')
+
+    def convert_t_list(self, old, type_):
+        """
+        Converts a item(s) to a list of specified type
+
+        Parameters
+        ----------
+        old:
+            The old item(s) to convert to a list
+        type_:
+            The type to convert to
+
+        Returns
+        -------
+        new:
+            The list of items converted to a specified type
+        
+        """
+        new = []
+        for item in old:
+            new.append(type_(item))
+
+        if len(new) == 1:
+            new = new[0]
+        return new
 
 if __name__ == '__main__':
     app = MainWindow()
