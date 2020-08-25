@@ -35,8 +35,10 @@ class MainWindow(tk.Tk):
     def __init_menu(self):
         """
         """
-        menuBar = tk.Menu(self, bg='grey')
+        menuBar = tk.Menu(self, bg='#666666')
 
+        menuBar.add_command(label='Home', command=lambda:self.show_frame(DrawPage))
+        
         menuFile = tk.Menu(menuBar, tearoff=0)
         menuFile.add_command(label='Save <C-s>',
                              command=self.frames[DrawPage].save_figure)
@@ -58,9 +60,50 @@ class MainWindow(tk.Tk):
                               command=lambda:self.show_frame(AdvSelPage))
         menuBar.add_cascade(label='Pages', menu=menuPages)
 
+        # Style menu ########
         menuStyle = tk.Menu(menuBar, tearoff=0)
+        style_options = self.frames[DrawPage].style_options
+
+        for style in style_options.items():
+            command = lambda style=style:(self.frames[DrawPage].change_style(style[1]),
+                                          self.frames[DrawPage].styleComboBox.set(style[0]))
+            
+            menuStyle.add_command(label=style[0],
+                                  command=command)
         menuBar.add_cascade(label='Styles', menu=menuStyle)
 
+        # Graph menu #########
+        menuGraph = tk.Menu(menuBar, tearoff=0)
+        commands=dict(sine=lambda:self.call_function(member=DrawPage,
+                                              function=DrawPage.callback_draw_sine,
+                                              p1=self.frames[AdvSelPage].get_xentry(),
+                                              p2=self.frames[AdvSelPage].get_yentry(),
+                                              p3=self.frames[AdvSelPage].get_periods(),
+                                              p4=self.frames[AdvSelPage].get_frequency()),
+                      cos=lambda:self.call_function(member=DrawPage,
+                                             function=DrawPage.callback_draw_cosine,
+                                             p1=self.frames[AdvSelPage].get_xentry(),
+                                             p2=self.frames[AdvSelPage].get_yentry(),
+                                             p3=self.frames[AdvSelPage].get_periods(),
+                                             p4=self.frames[AdvSelPage].get_frequency()),
+                      square=lambda:self.call_function(member=DrawPage,
+                                                       function=DrawPage.callback_draw_squarewave,
+                                                       p1=self.frames[AdvSelPage].get_xentry(),
+                                                       p2=self.frames[AdvSelPage].get_yentry(),
+                                                       p3=self.frames[AdvSelPage].get_periods(),
+                                                       p4=self.frames[AdvSelPage].get_frequency()))
+        menuWave = tk.Menu(menuGraph, tearoff=0)
+        menuWave.add_radiobutton(label='Sine',
+                                  command=commands['sine'])
+        menuWave.add_radiobutton(label='Cosine',
+                                  command=commands['cos'])
+        menuWave.add_radiobutton(label='Square',
+                                  command=commands['square'])
+        menuGraph.add_cascade(label='Wave form', menu=menuWave)
+        menuGraph.add_command(label='Advanced', command=lambda:self.show_frame(AdvSelPage))
+
+        menuBar.add_cascade(label='Graph', menu=menuGraph)
+        
         self.config(menu=menuBar)
         
 
@@ -970,6 +1013,25 @@ class DrawPage(tk.Frame):
         self.dc.draw_line_coords(coords=cosine)#, style='dot')
         self.dc.draw_graph_coords(x=x, y=y, clr='#BBBBBB')
 
+    def callback_draw_squarewave(self, x, y, periods=1, freq=1):
+        """
+        """
+        x_step = 2*math.pi*freq/(max(x)-min(x))
+        y_amp = max(y)-min(y)
+
+        square = []
+
+        for i in range(0, (max(x)-min(x))*periods):
+            square.append(min(x)+i)
+            if (math.sin(i*x_step)) >= 0:
+                square.append(max(y)-y_amp)
+            else:
+                square.append(max(y)+y_amp)
+
+        self.dc.draw_line_coords(coords=square)#, style='dash')
+        self.dc.draw_graph_coords(x=x, y=y, clr='#BBBBBB')
+
+
     
 class AdvSelPage(ttk.Frame):
     """
@@ -990,13 +1052,6 @@ class AdvSelPage(ttk.Frame):
         Initialises the frames
         """
         self.config(cursor='hand1')
-        
-        self.menuFrameLab = tk.LabelFrame(self, text='Menu', bg='grey')
-        #self.menuFrameLab.config(cursor='hand1')
-        self.menuFrameLab.pack(side='left', fill='both')
-
-        self.shapeFrameLab = tk.LabelFrame(self, text='Shapes', bg='grey')
-        self.shapeFrameLab.pack(side='left', fill='both')
 
         self.graphFrameLab = tk.LabelFrame(self, text='Graph', bg='grey')
         self.graphFrameLab.pack(side='left', fill='both')
@@ -1016,45 +1071,53 @@ class AdvSelPage(ttk.Frame):
         controller:
             The controlling widget
         """
+        fTop = tk.Frame(self.graphFrameLab, bg='grey')
+        fTop.pack(side='top')
+        fLeftTop = tk.Frame(fTop, bg='grey')
+        fLeftTop.pack(side='left')
+        fRightTop = tk.Frame(fTop, bg='grey')
+        fRightTop.pack(side='left')
+
         fLeft = tk.Frame(self.graphFrameLab, bg='grey')
         fLeft.pack(side='left')
         fRight = tk.Frame(self.graphFrameLab, bg='grey')
         fRight.pack(side='left')
-        xlabel = tk.Label(fLeft, text='x:', bg='grey')
+        
+        xlabel = tk.Label(fLeftTop, text='x:', bg='grey')
         xlabel.pack(side='top', padx=10)
 
-        xentry = Entry_w_Placeholder(fRight, placeholder='100, 300')
-        xentry.pack(side='top', padx=10)
+        self.xentry = Entry_w_Placeholder(fRightTop, placeholder='100, 300')
+        self.xentry.pack(side='top', padx=10)
 
-        ylabel = tk.Label(fLeft, text='y:', bg='grey')
+        ylabel = tk.Label(fLeftTop, text='y:', bg='grey')
         ylabel.pack(side='top', padx=10)
 
-        yentry = Entry_w_Placeholder(fRight, placeholder='100, 200')
-        yentry.pack(side='top', padx=10)
+        self.yentry = Entry_w_Placeholder(fRightTop, placeholder='100, 200')
+        self.yentry.pack(side='top', padx=10)
 
-        periodScale = tk.Scale(fLeft,
+        self.periodScale = tk.Scale(fLeft,
                                command=lambda e:(),
                                bg='grey', troughcolor='grey',
                                orient=tk.HORIZONTAL,
                                label='Periods',
                                from_=10,
                                to=1)
-        periodScale.pack(side='top', fill='both', padx=5)
-        periodScale.set(1)
-        create_tooltip(periodScale, "Set number of periods")
+        self.periodScale.pack(side='top', fill='both', padx=5)
+        self.periodScale.set(1)
+        create_tooltip(self.periodScale, "Set number of periods")
 
         freqLabel = tk.Label(fLeft, text='Frequency:', bg='grey')
         freqLabel.pack(side='top', fill='both', padx=5)
-        freqEntry = Entry_w_Placeholder(fRight, placeholder='1')
-        freqEntry.pack(side='top', fill='both', padx=5)
-        create_tooltip(freqEntry, "Set frequency in Hz")
+        self.freqEntry = Entry_w_Placeholder(fRight, placeholder='1')
+        self.freqEntry.pack(side='top', fill='both', padx=5)
+        create_tooltip(self.freqEntry, "Set frequency in Hz")
 
         sinFunc = lambda:(controller.call_function(member=DrawPage,
                                                    function=DrawPage.callback_draw_sine,
-                                                   p1=self.convert_t_list(xentry.get().split(','), int),
-                                                   p2=self.convert_t_list(yentry.get().split(','), int),
-                                                   p3=periodScale.get(),
-                                                   p4=float(freqEntry.get())))
+                                                   p1=self.convert_t_list(self.xentry.get().split(','), int),
+                                                   p2=self.convert_t_list(self.yentry.get().split(','), int),
+                                                   p3=self.periodScale.get(),
+                                                   p4=float(self.freqEntry.get())))
 
         buttonSine = tk.Button(self.graphFrameLab, text='Sine wave',
                                command= sinFunc,
@@ -1064,10 +1127,10 @@ class AdvSelPage(ttk.Frame):
 
         cosFunc = lambda:(controller.call_function(member=DrawPage,
                                                    function=DrawPage.callback_draw_cosine,
-                                                   p1=self.convert_t_list(xentry.get().split(','), int),
-                                                   p2=self.convert_t_list(yentry.get().split(','), int),
-                                                   p3=periodScale.get(),
-                                                   p4=float(freqEntry.get())))
+                                                   p1=self.convert_t_list(self.xentry.get().split(','), int),
+                                                   p2=self.convert_t_list(self.yentry.get().split(','), int),
+                                                   p3=self.periodScale.get(),
+                                                   p4=float(self.freqEntry.get())))
         
         buttonCos = tk.Button(self.graphFrameLab, text='Cosine wave',
                                command= cosFunc,
@@ -1099,6 +1162,26 @@ class AdvSelPage(ttk.Frame):
         if len(new) == 1:
             new = new[0]
         return new
+
+    def get_xentry(self):
+        """
+        """
+        return self.convert_t_list(self.xentry.get().split(','), int)
+
+    def get_yentry(self):
+        """
+        """
+        return self.convert_t_list(self.yentry.get().split(','), int)
+
+    def get_periods(self):
+        """
+        """
+        return self.periodScale.get()
+
+    def get_frequency(self):
+        """
+        """
+        return float(self.freqEntry.get())
 
 if __name__ == '__main__':
     app = MainWindow()

@@ -1,4 +1,4 @@
-line_colour:lightgrey
+line_colour:purple
 draw_style:pen
 line_width:5
 scaling:0
