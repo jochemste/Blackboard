@@ -1,6 +1,6 @@
-line_colour:purple
-draw_style:pen
-line_width:5
+line_colour:lightgrey
+draw_style:triangle
+line_width:4
 scaling:0
 shape_correction:1
 margin_line:30

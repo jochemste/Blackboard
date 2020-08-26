@@ -1,4 +1,4 @@
-from tk_shapes import Line, Text, Graph, Triangle, Square
+from tk_shapes import Line, Text, Graph, Triangle, Square, Arrow
 from shape_det import Shape_detector
 from image_prc import image_prc
 
@@ -59,6 +59,7 @@ class DrawCanvas(tk.Canvas):
         self.graph_coords = dict(x= None, y= None)
         self.triangle_coords = dict(x= None, y= None)
         self.square_coords = dict(x= None, y= None)
+        self.arrow_coords = dict(x= None, y= None)
         self.correct = True
         self.scale_widg = False
         self.margin = 30
@@ -205,6 +206,13 @@ class DrawCanvas(tk.Canvas):
                                           y=event.y)
             else:
                 self.draw_square(event)
+        elif self.draw_style == 'arrow':
+            if self.arrow_coords['x'] == None:
+                self.arrow_coords = dict(x=event.x,
+                                         y=event.y)
+            else:
+                self.draw_arrow(event)
+                
         else:
             self.draw_line(event=event, style=self.draw_style)
 
@@ -313,7 +321,31 @@ class DrawCanvas(tk.Canvas):
         """
         """
         pass
+
+    def draw_arrow(self, event):
+        """
+        """
+        self.lines_list.append([])
+
+        x1 = self.arrow_coords['x']
+        y1 = self.arrow_coords['y']
+        x2, y2 = event.x, event.y
+
+        arrow = Arrow(x=[x1,x2],y=[y1,y2], clr=self.line_clr,
+                      width=self.line_width, style='arrow')
+
+        arrow.id_ = [self.create_line(arrow.get_coords(),
+                                      fill=self.line_clr,
+                                      smooth=True,
+                                      width=self.line_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36,
+                                      arrow=tk.LAST)]
+
+        self.lines_list[-1].append(arrow)
         
+        self.arrow_coords['x']=None
+        self.arrow_coords['y']=None
         
     def draw_graph(self, event):
         """
@@ -354,6 +386,34 @@ class DrawCanvas(tk.Canvas):
         
         self.graph_coords['x']=None
         self.graph_coords['y']=None
+
+    def draw_arrow_coords(self, x, y, clr='', width=None):
+        """
+        """
+        self.lines_list.append([])
+
+        l_width=width
+        if l_width == None:
+            l_width = self.line_width
+
+        if clr == '':
+            clr = self.line_clr
+
+        arrow = Arrow(x=x,y=y, clr=clr,
+                      width=l_width, style='arrow')
+
+        arrow.id_ = [self.create_line(arrow.get_coords(),
+                                      fill=clr,
+                                      smooth=True,
+                                      width=l_width,
+                                      capstyle=tk.ROUND,
+                                      splinesteps=36,
+                                      arrow=tk.LAST)]
+
+        self.lines_list[-1].append(arrow)
+        
+        self.arrow_coords['x']=None
+        self.arrow_coords['y']=None
 
     def draw_graph_coords(self, x, y, clr='', width=None):
         """
@@ -1105,6 +1165,9 @@ class DrawCanvas(tk.Canvas):
                                       clr=line.clr, font=line.font)
             elif line.style=='graph':
                 self.draw_graph_coords(x=line.x, y=line.y,
+                                       clr=line.clr, width=line.width)
+            elif line.style=='arrow':
+                self.draw_arrow_coords(x=line.x, y=line.y,
                                        clr=line.clr, width=line.width)
 
     def save(self, invert_clrs=False):

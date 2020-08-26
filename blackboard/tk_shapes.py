@@ -44,6 +44,13 @@ class Line(BaseLine):
         self.style=style
         self.width=width
 
+    def get_coords(self):
+        coords=[]
+        for i in range(len(self.x)):
+            coords.append(self.x[i])
+            coords.append(self.y[i])
+        return coords
+
     def __str__(self):
         string = 'id_:' + str(self.id_) \
             + ' x:' + str(self.x) \
@@ -217,16 +224,12 @@ class Curve():
         return(min(self.x), min(self.y), min(self.x), max(self.y),
                max(self.x)+abs(max(self.x)-min(self.x)), max(self.y))
     
-class Arrow():
+class Arrow(Line):
     id_: list
 
     def __init__(self, x: list, y: list,
                  clr=None, style=None, width:list=None):
-        self.x = x
-        self.y = y
-        self.clr=clr
-        self.style=style
-        self.width=width
+        super().__init__(id_=None, x=x, y=y, clr=clr, style=style, width=width)
 
 
 class Text(Line):
