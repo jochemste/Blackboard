@@ -1,0 +1,200 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\pagestyle{headings}
+
+\begin{document}
+
+\markright{Blackboard}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+  % \maketitle
+  \begin{center}
+    \vspace*{1cm}
+
+    \Huge
+    \textbf{Research Report}
+
+    \vspace{0.5cm}
+    \LARGE
+    BlackBoard
+
+    \vspace{1.5cm}
+
+    \textbf{Jochem Stevense}
+
+    \vfill
+
+    A research report presented for the design \& implementation of Blackboard
+
+    \vspace{0.8cm}
+
+    % \includegraphics[width=0.4\textwidth]{imagefile}
+
+    \Large
+    Embedded Systems Engineering\\
+    Flexible Project\\
+    Hogeschool van Arnhem en Nijmegen\\
+    Ton Ammerlaan, Remko Welling\\
+    The Netherlands\\
+    September 2020\\
+  \end{center}
+\end{titlepage}
+
+\thispagestyle{plain}
+\begin{center}
+    \Large
+    \textbf{Research Report}
+        
+    \vspace{0.4cm}
+    \large
+    BlackBoard
+        
+    \vspace{0.4cm}
+    \textbf{Jochem Stevense}
+       
+    \vspace{0.9cm}
+    \textbf{Abstract}
+  \end{center}
+  kmlvmslfkm
+  \newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\newpage
+
+\section{Research}
+
+\subsection{Research Plan}
+
+To be able to provide a clear structure to the project research, a main research question has been formulated and split off into several sub-questions. The main research question is the following:\\
+
+\textit{What functionalities should a digital alternative to the traditional school-board include, to be user-friendly for the use of teaching and taking notes in education?}\\
+
+A number of sub-questions have been formulated to specify the research area and clarify the hard to define and/or subjective parts of the main question. These sub-questions are the following:
+
+\begin{enumerate}
+\item \textit{What programs currently exist, that can be used for the purpose of teaching and taking notes?}
+\item \textit{Why are current programs considered to be user-unfriendly for this specific educational purpose?}
+\item \textit{What functionalities are missing or can be considered desirable for a digital school-board?}
+\item \textit{What hardware can be used to improve the user-friendliness of the program?}
+\item \textit{How can the program be used on various platforms?}
+\end{enumerate}
+
+
+Combining these questions is believed to provide the needed guidelines to answer the main research question and to help design the solution.
+
+\subsection{Research Methodology}
+
+The research methodology will deal with the used methods to answer the main research question, preceded by the sub-questions, as formulated in the Research Plan. As is the case with the research, the sub-questions will be dealt with firstly, after which the main research question will be handled.
+
+\begin{enumerate}
+  
+\item \textit{What programs currently exist, that can be used for the purpose of teaching and taking notes?}\\
+  To answer this question, a desk research will be conducted, using online resources to create a list of existing programs that could be used for the purpose of a digital school-board. This will include paid, free-to-use and open-source programs alike. The type of programs that will be researched are the following:
+  \begin{itemize}
+  \item Drawing programs
+  \item Design programs
+  \item Note/text editor programs
+  \end{itemize}
+
+  Mobile and tablet applications will largely be left out of consideration, since the program is meant to run on desktops and laptops. The usability for these types of applications is fundamentally different and is out of scope for this phase in the project.
+  
+\item \textit{Why are current programs considered to be user-unfriendly for this specific educational purpose?}\\
+  To find out what users consider t be user-unfriendly when using the the programs in the list created by the previous sub-question, online reviews for the five most popular of these programs will be analysed to determine if they are relevant to this research and will be listed. Once twenty or more reviews per program have been found to be relevant, they will be summarised and a conclusion will be drawn per individual program, followed by a single complete conclusion and answer to this sub-question.
+  
+\item \textit{What functionalities are missing or can be considered desirable for a digital school-board?}\\
+  The resulting conclusion from the previous sub-question will be translated into a list of missing and/or desirable functionalities, after which a more qualitative research will be conducted in the form of a short and simple interview with a number of teachers and students. These interviews will be conducted to create another list of functionalities that are desirable. These lists of functionalities will be combined and will be analysed to research which of these are realisable for the project and which might be at a later stage. The results will be used to formulate requirements and possibly recommendations for future development.
+  
+\item \textit{What hardware can be used to improve the user-friendliness of the program?}\\
+  It might not be sufficient to design a program that can only be used with a regular mouse or trackpad. To make sure that the user-friendliness of the program can be increased, the possibilities of using separate hardware like drawing tablets will be researched.
+  
+\item \textit{How can the program be used on various platforms?}\\
+  To allow users to use the program on various platforms, it is desirable to create the program in such a way that it might be used on a large number of different platforms, without having to make adjustments to that particular system. This means that the program should not require the installation of any dependencies or other alterations to the system.
+
+\item[] \textit{What functionalities should a digital alternative to the traditional school-board include, to be user-friendly for the use of teaching and taking notes in education?}\\
+  The answers to the sub-questions will be combined into a summary and a list of requirements. These requirements together with the summary of the sub-questions, will provide the answer to the main research question and create a clear outlining for the project.
+  
+\end{enumerate}
+
+
+\subsection{Research Results}
+
+The results of the research will be handled per question, firstly dealing with the sub-questions.
+The results are listed in this paragraph. The conclusions following this research, will be dealt with in the Conclusions chapter.
+
+\begin{enumerate}
+\item \textit{What programs currently exist, that can be used for the purpose of teaching and taking notes?}\\
+  Currently, a great number of free and paid drawing and note/text editor programs exist that can be used for complex drawings and image processing, and editing text in text file format. These programs all have several advantages and disadvantages in general, but especially when a user is looking for a solution for the specific purposes of teaching, and taking and sharing notes. A number of these programs will be listed below and are chosen based on suitability to the project purpose, pricing, diversity to each other and popularity amongst users.
+  
+  \begin{enumerate}
+    
+  \item \textbf{Adobe Photoshop}\\
+    \underline{General:}\\
+    Adobe Photoshop is a highly popular program amongst many types of users. Adobe Photoshop is mostly used by designers and photographers, but is included in the Creative Cloud package, made available by Adobe. The program enables users to create drawings and images but also allows the modification of existing images, which can easily be imported. If the user has a Creative Cloud subscription, projects made in Adobe Photoshop are stored in a personal cloud-based space automatically. The program is capable of being modified, so users can have quick and intuitive access to their favourite brushes, colours and styles. The program used to be available for stand-alone purchase, but now seems to only be available with a Creative Cloud subscription. This subscriptions price varies, depending on the user. For example, students and teacher might benefit from lower prices due to an educational subscription. This educational subscription costs about €17,- per month, while a normal subscription costs about €45,- per month. This includes a great number of programs that might be beneficial for certain types of study courses.\\
+
+    \underline{Pros:}\\
+    The program works intuitively and is customisable to the users personal preferences. Creative Cloud is heavily discounted for educational use and stores all projects in a cloud based space. The program is popular and when encountering problems, solutions can easily be found online.\\
+    
+    \underline{Cons:}\\
+    The program is not designed for educational use and could be hard to use for this purpose, especially without dedicated hardware. For new users, the learning curve is considered to be steep, which might act as a deterrent for both students and teachers who do not use it daily. The program is severely overpowered if used for making notes and simple drawing and can be considered to be in the higher price-range if only used for this purpose. A free competitor to Adobe Photoshop is available and is called Gimp. However, this program has an even steeper learning curve than Adobe Photoshop, which is why it is not dealt with separately. There are also no specific tools available for educational drawings and notes, which means that the drawings have to be made manually, and for most users, using the computers mouse.\\
+
+  \item \textbf{Inkscape}\\
+    \underline{General:}\\
+    Inkscape is a free and open-sourced program that has been around for many years. It is a direct competitor to Adobe Illustrator and is fairly popular. Since Inkscape is free and has little disadvantages when compared to Adobe Illustrator and even a number of advantages, like compatibility with a larger number of operating systems, only Inkscape is considered. Inkscape is a highly capable program, used by both professional and amateur designers to create vector based drawings and designs. The program is stable and intuitive to use, but requires some knowledge about the different tools to be able to start drawing.\\
+    
+    \underline{Pros:}\\
+    The program is avaible for a large number of operating systems, ensuring that the user can use the same program on most devices. Inkscape is free and has been around for a long time, making it likely that it will stay around for long time.
+    
+    \underline{Cons:}\\
+    The program has a steep learning curve, even for very basic drawings. Next to this, the program has no support for educational uses, such as the drawing of a graph or mathematical formulas.\\
+
+  \item \textbf{Microsoft Whiteboard}\\
+    \underline{General:}\\
+    Microsoft Whiteboard is a simple program, designed to be used in meetings for notes, brainstorming and presentations. The program is easy in its use and comes close to being a program that can be used for educational purposes. The program cannot be customised and has little functionality, other than being used for drawings. The program is also avaible to be used inside the Microsoft Teams application, whcich is an online meeting platform.
+    
+    \underline{Pros:}\\
+    It is simple in its use and has a very flat learning curve, allowing users to get started, with zero knowledge of the program. The program works intuitively and has a small number of drawing tools available on the main screen for quick access. The program is integrated in Microsoft Teams, making it usefull for online meetings.\\
+    
+    \underline{Cons:}\\
+    The program is hard to use with a normal mouse and can result in atistic drawings that might be hard for others to decipher. Microsoft Whiteboard has no educational templates available that would make it easier to draw mathematical signs.\\
+
+  \item \textbf{LaTeX (With Emacs and Overleaf)}\\
+    \underline{General:}\\
+    \LaTeX is used for scientific documentation and is especially strong in the representation of mathematical signs and formulas. \LaTeX is a text based tool, capable of producing PDF-files and presentations. The user writes text in the specific \LaTeX format, which can then be compiled into a PDF file or another specified format. It is highly flexible and can be used for a great number of documents and/or notes. The user can use this tool in a great number of general or dedicated text editors, such as Emacs, which can be modified to write \LaTeX documents with greater ease, and Overleaf, which is an online editor, dedicated to \LaTeX, which quickly shows the resulting PDF file and has a great number of tutorials available.\\
+    
+    \underline{Pros:}\\
+    \LaTeX is highly flexible and can be used for simple notes, but also for complex reports and documents. It is capable of displaying mathematical signs and formulas and has great community support. A user can choose a text editor best suited to the needs and wishes of the user.\\
+    
+    \underline{Cons:}\\
+    The learning curve can be especially hard for users with little affinity to coding or markdown languages. Also, if the user encounters an unknown sign, looking for the right keyword can be a lengthy process, which is undesirable for example during classes. Also, free drawing is not supported, which can be difficult in certain educational situations.\\
+    
+  \end{enumerate}
+  
+\item \textit{Why are current programs considered to be user-unfriendly for this specific educational purpose?}\\
+  
+\item \textit{What functionalities are missing or can be considered desirable for a digital school-board?}\\
+  
+\item \textit{What hardware can be used to improve the user-friendliness of the program?}\\
+
+  \begin{itemize}
+  \item \textbf{Wacom Drawing Tablet}
+  \item \textbf{Pen Mouse}
+  \end{itemize}
+  
+\item \textit{How can the program be used on various platforms?}\\
+  
+\end{enumerate}
+
+\section{Conclusions}
+
+\end{document}
