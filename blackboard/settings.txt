@@ -1,7 +1,7 @@
-line_colour:lightgrey
-draw_style:triangle
+line_colour:red
+draw_style:pen
 line_width:4
 scaling:0
-shape_correction:1
+shape_correction:0
 margin_line:30
 margin_circle:30
